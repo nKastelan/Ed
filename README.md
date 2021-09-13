@@ -1,5 +1,5 @@
 # Ed
-Event-driven backtesting engine written in C++ with a GUI
+Event-driven backtesting engine written in C++
 
 Ed is a high performance (hopefully), event-driven backtesting engine for trading strategies written in C++. 
 
