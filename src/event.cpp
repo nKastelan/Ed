@@ -19,6 +19,10 @@ OrderEvent::OrderEvent(std::string symbol, std::string order_type, double quanti
     this->direction = direction;
 }
 
+void OrderEvent::logOrder() {
+    // TODO order logging
+}
+
 FillEvent::FillEvent(std::string symbol, long timestamp, double quantity, std::string direction, double cost) {
     this->type = "FILL";
     this->symbol = symbol;
@@ -30,12 +34,10 @@ FillEvent::FillEvent(std::string symbol, long timestamp, double quantity, std::s
     this->slippage = calculateSlippage();
 }
 
-//Returns the commission in $, Binance spot rate at 0.1%
 double FillEvent::calculateCommission() {
     return 0.001 * cost;
 }
 
-//Returns the slippage in %, currently 0
 double FillEvent::calculateSlippage() {
     return 0.0;
 }
