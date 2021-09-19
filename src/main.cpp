@@ -15,5 +15,11 @@ int main(int argc, char **argv) {
 
     std::cout << "Done,loading data into memory took " << time.count() << "ms" << std::endl;
 
+    std::cout << "consumedData has size " << dataHandler.consumedData.at("ETH/USDT").size() << std::endl;
+    dataHandler.updateBars();
+    dataHandler.updateBars();
+    dataHandler.updateBars();
+    std::cout << "consumedData has size " << dataHandler.consumedData.at("ETH/USDT").size() << std::endl;
+
     return 0;
 }
