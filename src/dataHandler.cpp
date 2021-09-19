@@ -8,12 +8,11 @@ SingleCSVDataHandler::SingleCSVDataHandler(std::queue<Event>* eventQueue, std::s
 };
 
 void SingleCSVDataHandler::loadData() {
-    std::ifstream fileToRead(csvDirectory);
+    std::ifstream fileToRead(csvDirectory, std::ios::binary);
     if (!fileToRead.is_open()) throw std::runtime_error("Could not open file!");
 
     std::string line, lineItem;
-    std::unordered_set<int> validPositions ({0, 2, 3, 4, 5, 6, 8});
-    std::unordered_map<long, std::tuple<double, double, double, double, double>> innerMap;
+    std::map<long long, std::tuple<double, double, double, double, double>> innerMap;
 
     // skip the first two rows in the data file to get to the raw data
     std::getline(fileToRead, line);
@@ -28,20 +27,37 @@ void SingleCSVDataHandler::loadData() {
             lineVector.push_back(lineItem);
         }
         
-        innerMap.insert(std::make_pair(std::stol(lineVector[0]), std::make_tuple(std::stod(lineVector[3]), std::stod(lineVector[4]), std::stod(lineVector[5]), std::stod(lineVector[6]), std::stod(lineVector[8]))));
+        innerMap.insert(std::make_pair(std::stoll(lineVector[0]), std::make_tuple(std::stod(lineVector[3]), std::stod(lineVector[4]), std::stod(lineVector[5]), std::stod(lineVector[6]), std::stod(lineVector[8]))));
     }
 
     data.insert(std::make_pair(symbol, innerMap));
+
+    // initialize iterator over the data
+    bar = data.at(symbol).begin();
 }
 
-/*
+std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> SingleCSVDataHandler::getLatestBars(std::string symbol, int n = 1) {
+    std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> lastNBars;
+    std::map<long long, std::tuple<double, double, double, double, double>> innerMap;
 
-std::unordered_map<std::string, std::unordered_map<long, std::tuple<double, double, double, double, double>>> getLatestBars(std::string symbol, int n = 1) {
-    // TODO return the last n bars
+    auto map = consumedData.at(symbol);
+    for (auto rit = map.crbegin(); n > 0 && rit != map.crend(); ++rit, --n) {
+        innerMap.insert(std::make_pair(rit->first, rit->second));
+    }
+
+    lastNBars.insert(std::make_pair(symbol, innerMap));
+
+    return lastNBars;
 } 
 
 void SingleCSVDataHandler::updateBars() {
-    // TODO push the latest bar onto the eventQueue
-}
+    // add a bar to "consumedData"
+    if (bar != data.at(symbol).end()) {
+        consumedData.at(symbol).at(bar->first) = bar->second;
+        ++bar;
+    } else {
+        *continueBacktest = false;
+    }
 
-*/
+    eventQueue->push(MarketEvent());
+}

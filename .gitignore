@@ -1,6 +1,7 @@
 ### C++ ###
 # Prerequisites
 *.d
+*.json
 
 # Compiled Object files
 *.slo
@@ -35,6 +36,9 @@
 ### VisualStudioCode ###
 .vscode/*
 
+### VisualStudio ###
+.vs/*
+
 # Local History for Visual Studio Code
 .history/
 
@@ -42,3 +46,10 @@
 # Ignore all local history of files
 .history
 .ionide
+
+*.sln
+*.vcxproj*
+Debug/*
+Release/*
+x64/*
+data/*
