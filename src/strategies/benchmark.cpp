@@ -3,13 +3,23 @@
 Benchmark::Benchmark(DataHandler* dataHandler) {
 	this->dataHandler = dataHandler;
 	this->eventQueue = dataHandler->eventQueue;
-	this->bought = false;
+
+	std::unordered_map<std::string, bool> bought;
+	auto size = dataHandler->symbols.size();
+	for (unsigned int i = 0; i < size; ++i) {
+		bought.insert(std::make_pair(dataHandler->symbols.at(i), false));
+	}
+
+	this->bought = bought;
 }
 
 void Benchmark::calculateSignals() {
-	if (!bought) {
-		auto timestamp = dataHandler->getLatestBars(dataHandler->symbol).at(dataHandler->symbol).begin()->first;
-		eventQueue->push(SignalEvent(dataHandler->symbol, timestamp, 1.0));
-		bought = true;
+	for (unsigned int i = 0; i < dataHandler->symbols.size(); ++i) {
+		auto symbol = dataHandler->symbols.at(i);
+		if (!bought.at(symbol)) {
+			auto timestamp = dataHandler->getLatestBars(symbol).at(symbol).begin()->first;
+			eventQueue->push(SignalEvent(symbol, timestamp, 1.0));
+			bought.insert_or_assign(symbol, true);
+		}
 	}
 }

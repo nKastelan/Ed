@@ -5,8 +5,6 @@
 #include <sstream>
 #include <fstream>
 #include <string>
-#include <string_view>
-#include <unordered_set>
 #include "event.hpp"
 
 class DataHandler {
@@ -15,8 +13,8 @@ public:
     std::queue<Event>* eventQueue = 0;
     // Flag variable
     bool* continueBacktest = 0;
-    // Symbol of the traded asset
-    std::string symbol;
+    // Symbols of the traded assets
+    std::vector<std::string> symbols;
 
     virtual std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> getLatestBars(std::string symbol, int n = 1) = 0;
     virtual void updateBars() = 0;
@@ -34,7 +32,7 @@ public:
     // Iterator over the historical data contained in "data"
     std::map<long long, std::tuple<double, double, double, double, double>>::iterator bar;
 
-    SingleCSVDataHandler(std::queue<Event>* eventQueue, std::string csvDirectory, std::string symbol, bool* continueBacktest);
+    SingleCSVDataHandler(std::queue<Event>* eventQueue, std::string csvDirectory, std::vector<std::string> symbol, bool* continueBacktest);
 
     // Formats and loads the data into memory ("data")
     void loadData();

@@ -1,9 +1,9 @@
 #include "dataHandler.hpp"
 
-SingleCSVDataHandler::SingleCSVDataHandler(std::queue<Event>* eventQueue, std::string csvDirectory, std::string symbol, bool* continueBacktest) {
+SingleCSVDataHandler::SingleCSVDataHandler(std::queue<Event>* eventQueue, std::string csvDirectory, std::vector<std::string> symbols, bool* continueBacktest) {
     this->eventQueue = eventQueue;
     this->csvDirectory = csvDirectory;
-    this->symbol = symbol;
+    this->symbols = symbols;
     this->continueBacktest = continueBacktest;
     this->data;
     this->consumedData;
@@ -33,14 +33,14 @@ void SingleCSVDataHandler::loadData() {
         innerMap.insert(std::make_pair(std::stoll(lineVector[0]), std::make_tuple(std::stod(lineVector[3]), std::stod(lineVector[4]), std::stod(lineVector[5]), std::stod(lineVector[6]), std::stod(lineVector[8]))));
     }
 
-    data.insert(std::make_pair(symbol, innerMap));
+    data.insert(std::make_pair(symbols.at(0), innerMap));
 
     // initialize iterator over the data
-    bar = data.at(symbol).begin();
+    bar = data.at(symbols.at(0)).begin();
 
     // initialize consumedData[symbol]
     innerMap.clear();
-    consumedData.insert(std::make_pair(symbol, innerMap));
+    consumedData.insert(std::make_pair(symbols.at(0), innerMap));
 }
 
 std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> SingleCSVDataHandler::getLatestBars(std::string symbol, int n) {
@@ -63,8 +63,8 @@ std::unordered_map<std::string, std::map<long long, std::tuple<double, double, d
 
 void SingleCSVDataHandler::updateBars() {
     // add a bar to "consumedData"
-    if (bar != data.at(symbol).end()) {
-        consumedData.at(symbol).insert(std::make_pair(bar->first, bar->second));
+    if (bar != data.at(symbols.at(0)).end()) {
+        consumedData.at(symbols.at(0)).insert(std::make_pair(bar->first, bar->second));
         ++bar;
     } else {
         *continueBacktest = false;
