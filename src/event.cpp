@@ -4,7 +4,7 @@ MarketEvent::MarketEvent() {
     type = "MARKET";
 }
 
-SignalEvent::SignalEvent(std::string symbol, long timestamp, double signal) {
+SignalEvent::SignalEvent(std::string symbol, long long timestamp, double signal) {
     this->type = "SIGNAL";
     this->symbol = symbol;
     this->timestamp = timestamp;
@@ -23,7 +23,7 @@ void OrderEvent::logOrder() {
     // TODO order logging
 }
 
-FillEvent::FillEvent(std::string symbol, long timestamp, double quantity, std::string direction, double cost) {
+FillEvent::FillEvent(std::string symbol, long long timestamp, double quantity, std::string direction, double cost) {
     this->type = "FILL";
     this->symbol = symbol;
     this->timestamp = timestamp;

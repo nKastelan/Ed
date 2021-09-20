@@ -11,21 +11,22 @@
 
 class DataHandler {
 public:
+    // Queue of Events
+    std::queue<Event>* eventQueue = 0;
+    // Flag variable
+    bool* continueBacktest = 0;
+    // Symbol of the traded asset
+    std::string symbol;
+
     virtual std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> getLatestBars(std::string symbol, int n = 1) = 0;
     virtual void updateBars() = 0;
     virtual ~DataHandler() = default;
 };
 
-class SingleCSVDataHandler: DataHandler {
+class SingleCSVDataHandler: public DataHandler {
 public:
-    // Queue of Events
-    std::queue<Event>* eventQueue;
     // Path to the csv data files
     std::string csvDirectory;
-    // Symbol of the traded asset
-    std::string symbol;
-    // Flag variable
-    bool* continueBacktest;
     // Historical data in format <symbol, <timestamp, [open, high, low, close, volume]>>
     std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> data;
     // Data consumed so far in format <symbol, <timestamp, [open, high, low, close, volume]>>
@@ -39,7 +40,7 @@ public:
     void loadData();
 
     // Returns the "n" latest bars in format <symbol, <timestamp, [open, high, low, close, volume]>>
-    std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> getLatestBars(std::string symbol, int n);
+    std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> getLatestBars(std::string symbol, int n = 1);
 
     // Pushes the latest bar onto the "eventQueue"
     void updateBars();

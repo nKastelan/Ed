@@ -19,11 +19,11 @@ public:
     // Symbol of the traded asset
     std::string symbol;
     // Unix timestamp
-    long timestamp;
+    long long timestamp;
     // Range of [-1, 1], negative for going short, positive for going long, absolute value for signal strength
     double signal;
 
-    SignalEvent(std::string symbol, long timestamp, double signal);
+    SignalEvent(std::string symbol, long long timestamp, double signal);
 };
 
 class OrderEvent: public Event {
@@ -48,7 +48,7 @@ public:
     // Symbol of the traded asset
     std::string symbol;
     // Unix timestamp
-    long timestamp;
+    long long timestamp;
     // Quantity we wish to trade
     double quantity;
     // "L" for long, "S" for short
@@ -60,7 +60,7 @@ public:
     // Slippage for the order as a percentage
     double slippage;
 
-    FillEvent(std::string symbol, long timestamp, double quantity, std::string direction, double cost);
+    FillEvent(std::string symbol, long long timestamp, double quantity, std::string direction, double cost);
 
     // Calculates the commission for the order in $, Binance spot 0.1%
     double calculateCommission();
