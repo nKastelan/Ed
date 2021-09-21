@@ -1,6 +1,7 @@
 #pragma once
 #include "../event.hpp"
 #include "../dataHandler.hpp"
+#include "ta_libc.h"
 
 class Strategy {
 public:
