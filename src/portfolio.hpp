@@ -32,7 +32,7 @@ public:
 
 	SimplePortfolio(DataHandler* dataHandler, std::queue<Event>* eventQueue, std::vector<std::string> symbols, double* initialCapital);
 
-	SimplePortfolio();
+	SimplePortfolio() = default;
 
 	// Constructs allPositions
 	std::map<long long, std::unordered_map<std::string, double>> constructAllPositions();

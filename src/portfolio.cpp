@@ -16,7 +16,8 @@ std::map<long long, std::unordered_map<std::string, double>> SimplePortfolio::co
 	for (auto symbol : symbols) {
 		innerMap.insert(std::make_pair(symbol, 0.0));
 	}
-	auto firstTimestamp = dataHandler->getLatestBars(symbols.at(0)).begin()->first;
+	//auto firstTimestamp = dataHandler->getLatestBars(symbols.at(0)).begin()->first;
+	auto firstTimestamp = 0;
 	std::map<long long, std::unordered_map<std::string, double>> map;
 	map.insert(std::make_pair(firstTimestamp, innerMap));
 	return map;

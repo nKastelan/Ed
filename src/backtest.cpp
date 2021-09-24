@@ -28,19 +28,38 @@ void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
 			auto event = eventQueue.front();
 			
 			if (event.type == "MARKET") {
-
+				strategy.calculateSignals();
+				benchmark.calculateSignals();
 			}
 			else if (event.type == "SIGNAL") {
-
+				auto signal = dynamic_cast<SignalEvent*>(&event);
+				if (signal->target == "ALGO") {
+					portfolio.onSignal(*signal);
+				}
+				else if (signal->target == "BENCH") {
+					benchmarkPortfolio.onSignal(*signal);
+				}
 			}
 			else if (event.type == "ORDER") {
-
+				auto order = dynamic_cast<OrderEvent*>(&event);
+				exchange.executeOrder(*order);
+				order->logOrder();
 			}
 			else if (event.type == "FILL") {
-
+				auto fill = dynamic_cast<FillEvent*>(&event);
+				if (fill->target == "ALGO") {
+					portfolio.onFill(*fill);
+				}
+				else if (fill->target == "BENCH") {
+					benchmarkPortfolio.onFill(*fill);
+				}
 			}
 
 			eventQueue.pop();
+		}
+		else {
+			portfolio.update();
+			benchmarkPortfolio.update();
 		}
 	}
 }

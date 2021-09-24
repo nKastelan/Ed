@@ -8,6 +8,7 @@ SingleCSVDataHandler::SingleCSVDataHandler(std::queue<Event>* eventQueue, std::s
     this->data;
     this->consumedData;
     this->bar;
+    loadData();
 };
 
 void SingleCSVDataHandler::loadData() {
@@ -44,15 +45,13 @@ void SingleCSVDataHandler::loadData() {
 }
 
 std::map<long long, std::tuple<double, double, double, double, double>> SingleCSVDataHandler::getLatestBars(std::string symbol, int n) {
-    std::map<long long, std::tuple<double, double, double, double, double>> map;
-
     auto map = consumedData.at(symbol);
 
     // Returns an empty object if there is not enough data in "consumedData"
     if (map.size() < unsigned(n)) return map;
 
     for (auto rit = map.rbegin(); n > 0 && rit != map.rend(); ++rit, --n) {
-        map.insert(std::make_pair(rit->first, rit->second));
+        map[rit->first] =  rit->second;
     }
 
     return map;

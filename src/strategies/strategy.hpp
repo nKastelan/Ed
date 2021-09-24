@@ -20,7 +20,7 @@ public:
 
 	Benchmark(DataHandler* dataHandler);
 
-	Benchmark();
+	Benchmark() = default;
 
 	// Puts a SignalEvent onto the eventQueue after the first bar
 	void calculateSignals();
@@ -37,7 +37,7 @@ public:
 
 	TradingStrategy(DataHandler* dataHandler);
 
-	TradingStrategy();
+	TradingStrategy() = default;
 
 	// Puts SignalEvents onto the eventQueue
 	void calculateSignals();

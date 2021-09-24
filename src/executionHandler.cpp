@@ -8,5 +8,5 @@ InstantExecutionHandler::InstantExecutionHandler(std::queue<Event>* eventQueue, 
 void InstantExecutionHandler::executeOrder(OrderEvent order) {
 	auto timestamp = dataHandler->getLatestBars(order.symbol).rbegin()->first;
 
-	eventQueue->push(FillEvent(order.symbol, timestamp, order.quantity, order.direction, 0));
+	eventQueue->push(FillEvent(order.symbol, timestamp, order.quantity, order.direction, 0, order.target));
 }

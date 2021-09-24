@@ -5,8 +5,8 @@
 
 class ExecutionHandler {
 public:
-	std::queue<Event>* eventQueue;
-	DataHandler* dataHandler;
+	std::queue<Event>* eventQueue = 0;
+	DataHandler* dataHandler = 0;
 	virtual void executeOrder(OrderEvent order) = 0;
 };
 
@@ -14,7 +14,7 @@ class InstantExecutionHandler : ExecutionHandler {
 public:
 	InstantExecutionHandler(std::queue<Event>* eventQueue, DataHandler* dataHandler);
 
-	InstantExecutionHandler();
+	InstantExecutionHandler() = default;
 
 	// Simulates the exchange filling the order
 	void executeOrder(OrderEvent order);
