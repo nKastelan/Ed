@@ -43,22 +43,19 @@ void SingleCSVDataHandler::loadData() {
     consumedData.insert(std::make_pair(symbols.at(0), innerMap));
 }
 
-std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> SingleCSVDataHandler::getLatestBars(std::string symbol, int n) {
-    std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> lastNBars;
-    std::map<long long, std::tuple<double, double, double, double, double>> innerMap;
+std::map<long long, std::tuple<double, double, double, double, double>> SingleCSVDataHandler::getLatestBars(std::string symbol, int n) {
+    std::map<long long, std::tuple<double, double, double, double, double>> map;
 
     auto map = consumedData.at(symbol);
 
     // Returns an empty object if there is not enough data in "consumedData"
-    if (map.size() < unsigned(n)) return lastNBars;
+    if (map.size() < unsigned(n)) return map;
 
     for (auto rit = map.rbegin(); n > 0 && rit != map.rend(); ++rit, --n) {
-        innerMap.insert(std::make_pair(rit->first, rit->second));
+        map.insert(std::make_pair(rit->first, rit->second));
     }
 
-    lastNBars.insert(std::make_pair(symbol, innerMap));
-
-    return lastNBars;
+    return map;
 } 
 
 void SingleCSVDataHandler::updateBars() {

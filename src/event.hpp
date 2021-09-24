@@ -30,11 +30,11 @@ class OrderEvent: public Event {
 public:
     // Symbol of the traded asset
     std::string symbol;
-    // "M" for market, "L" for limit
+    // "MARKET" for market, "LIMIT" for limit
     std::string order_type;
     // Quantity we wish to trade
     double quantity;
-    // "L" for long, "S" for short
+    // "LONG" for long, "SHORT" for short
     std::string direction;
 
     OrderEvent(std::string symbol, std::string order_type, double quantity, std::string direction);
@@ -51,7 +51,7 @@ public:
     long long timestamp;
     // Quantity we wish to trade
     double quantity;
-    // "L" for long, "S" for short
+    // "LONG" for long, "SHORT" for short
     std::string direction;
     // Cost of the filled order in $
     double cost;

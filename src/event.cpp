@@ -20,7 +20,7 @@ OrderEvent::OrderEvent(std::string symbol, std::string order_type, double quanti
 }
 
 void OrderEvent::logOrder() {
-    // TODO order logging
+    std::cout << "Order placed!" << endl;
 }
 
 FillEvent::FillEvent(std::string symbol, long long timestamp, double quantity, std::string direction, double cost) {
