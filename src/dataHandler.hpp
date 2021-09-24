@@ -34,6 +34,8 @@ public:
 
     SingleCSVDataHandler(std::queue<Event>* eventQueue, std::string csvDirectory, std::vector<std::string> symbol, bool* continueBacktest);
 
+    SingleCSVDataHandler();
+
     // Formats and loads the data into memory ("data")
     void loadData();
 

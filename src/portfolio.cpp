@@ -135,7 +135,7 @@ void SimplePortfolio::generateOrder(SignalEvent event) {
 		direction = "SHORT";
 	}
 
-	eventQueue->push(OrderEvent(event.symbol, "MARKET", quantity, direction));
+	eventQueue->push(OrderEvent(event.symbol, "MARKET", quantity, direction, event.target));
 }
 
 void SimplePortfolio::getMetrics() {

@@ -20,6 +20,8 @@ public:
 
 	Benchmark(DataHandler* dataHandler);
 
+	Benchmark();
+
 	// Puts a SignalEvent onto the eventQueue after the first bar
 	void calculateSignals();
 };
@@ -34,6 +36,8 @@ public:
 	std::unordered_map<std::string, bool> bought;
 
 	TradingStrategy(DataHandler* dataHandler);
+
+	TradingStrategy();
 
 	// Puts SignalEvents onto the eventQueue
 	void calculateSignals();

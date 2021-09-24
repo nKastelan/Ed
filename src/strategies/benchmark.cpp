@@ -17,8 +17,8 @@ void Benchmark::calculateSignals() {
 	for (unsigned int i = 0; i < dataHandler->symbols.size(); ++i) {
 		auto symbol = dataHandler->symbols.at(i);
 		if (!bought.at(symbol)) {
-			auto timestamp = dataHandler->getLatestBars(symbol).at(symbol).begin()->first;
-			eventQueue->push(SignalEvent(symbol, timestamp, 1.0));
+			auto timestamp = dataHandler->getLatestBars(symbol).begin()->first;
+			eventQueue->push(SignalEvent(symbol, timestamp, 1.0, "BENCH"));
 			bought.insert_or_assign(symbol, true);
 		}
 	}
