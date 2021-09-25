@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     auto end = std::chrono::high_resolution_clock::now();
     auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-    std::cout << "Done,loading data into memory took " << time.count() << "ms" << std::endl;
+    std::cout << "Done,backtesting took " << time.count() << "ms" << std::endl;
     
 
     return 0;

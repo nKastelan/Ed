@@ -12,13 +12,13 @@ public:
 class Benchmark: Strategy {
 public:
 	// Pointer to the DataHandler used
-	DataHandler* dataHandler;
+	SingleCSVDataHandler* dataHandler;
 	// Pointer to the eventQueue, accesible with dataHandler.eventQueue
-	std::queue<Event>* eventQueue;
+	std::queue<Event*>* eventQueue;
 	// Flag variable to indicate if the assets are bought
 	std::unordered_map<std::string, bool> bought;
 
-	Benchmark(DataHandler* dataHandler);
+	Benchmark(SingleCSVDataHandler* dataHandler);
 
 	Benchmark() = default;
 
@@ -29,13 +29,13 @@ public:
 class TradingStrategy : Strategy {
 public:
 	// Pointer to the DataHandler used
-	DataHandler* dataHandler;
+	SingleCSVDataHandler* dataHandler;
 	// Pointer to the eventQueue, accesible with dataHandler.eventQueue
-	std::queue<Event>* eventQueue;
+	std::queue<Event*>* eventQueue;
 	// Flag variable to indicate if the assets are bought
 	std::unordered_map<std::string, bool> bought;
 
-	TradingStrategy(DataHandler* dataHandler);
+	TradingStrategy(SingleCSVDataHandler* dataHandler);
 
 	TradingStrategy() = default;
 

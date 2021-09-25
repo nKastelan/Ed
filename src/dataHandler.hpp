@@ -9,13 +9,16 @@
 
 class DataHandler {
 public:
+    // Path to the csv data files
+    std::string csvDirectory;
     // Queue of Events
-    std::queue<Event>* eventQueue = 0;
+    std::queue<Event*>* eventQueue = 0;
     // Flag variable
     bool* continueBacktest = 0;
     // Symbols of the traded assets
     std::vector<std::string> symbols;
 
+    virtual void loadData() = 0;
     virtual std::map<long long, std::tuple<double, double, double, double, double>> getLatestBars(std::string symbol, int n = 1) = 0;
     virtual void updateBars() = 0;
     virtual ~DataHandler() = default;
@@ -32,7 +35,7 @@ public:
     // Iterator over the historical data contained in "data"
     std::map<long long, std::tuple<double, double, double, double, double>>::iterator bar;
 
-    SingleCSVDataHandler(std::queue<Event>* eventQueue, std::string csvDirectory, std::vector<std::string> symbol, bool* continueBacktest);
+    SingleCSVDataHandler(std::queue<Event*>* eventQueue, std::string csvDirectory, std::vector<std::string> symbol, bool* continueBacktest);
 
     SingleCSVDataHandler() = default;
 

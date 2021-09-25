@@ -10,7 +10,7 @@ public:
 	std::string csvDirectory;
 	double* initialCapital;
 	bool continueBacktest;
-	std::queue<Event> eventQueue;
+	std::queue<Event*>* eventQueue;
 	InstantExecutionHandler exchange;
 	SimplePortfolio portfolio;
 	SingleCSVDataHandler dataHandler;

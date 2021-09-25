@@ -1,6 +1,6 @@
 #include "strategy.hpp"
 
-TradingStrategy::TradingStrategy(DataHandler* dataHandler) {
+TradingStrategy::TradingStrategy(SingleCSVDataHandler* dataHandler) {
 	this->dataHandler = dataHandler;
 	this->eventQueue = dataHandler->eventQueue;
 
@@ -14,12 +14,11 @@ TradingStrategy::TradingStrategy(DataHandler* dataHandler) {
 }
 
 void TradingStrategy::calculateSignals() {
-	for (unsigned int i = 0; i < dataHandler->symbols.size(); ++i) {
-		auto symbol = dataHandler->symbols.at(i);
-		if (!bought.at(symbol)) {
-			auto timestamp = dataHandler->getLatestBars(symbol).begin()->first;
-			eventQueue->push(SignalEvent(symbol, timestamp, 1.0, "ALGO"));
-			bought.insert_or_assign(symbol, true);
+	for (auto symbol : this->dataHandler->symbols) {
+		if (!this->bought.at(symbol)) {
+			auto timestamp = this->dataHandler->getLatestBars(symbol).begin()->first;
+			this->eventQueue->push(new SignalEvent(symbol, timestamp, 1.0, "ALGO"));
+			bought[symbol] = true;
 		}
 	}
 }

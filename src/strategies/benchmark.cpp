@@ -1,6 +1,6 @@
 #include "strategy.hpp"
 
-Benchmark::Benchmark(DataHandler* dataHandler) {
+Benchmark::Benchmark(SingleCSVDataHandler* dataHandler) {
 	this->dataHandler = dataHandler;
 	this->eventQueue = dataHandler->eventQueue;
 
@@ -14,12 +14,11 @@ Benchmark::Benchmark(DataHandler* dataHandler) {
 }
 
 void Benchmark::calculateSignals() {
-	for (unsigned int i = 0; i < dataHandler->symbols.size(); ++i) {
-		auto symbol = dataHandler->symbols.at(i);
+	for (auto symbol : this->dataHandler->symbols) {
 		if (!bought.at(symbol)) {
 			auto timestamp = dataHandler->getLatestBars(symbol).begin()->first;
-			eventQueue->push(SignalEvent(symbol, timestamp, 1.0, "BENCH"));
-			bought.insert_or_assign(symbol, true);
+			this->eventQueue->push(new SignalEvent(symbol, timestamp, 1.0, "BENCH"));
+			bought[symbol] = true;
 		}
 	}
 }

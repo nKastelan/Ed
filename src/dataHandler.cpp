@@ -1,6 +1,6 @@
 #include "dataHandler.hpp"
 
-SingleCSVDataHandler::SingleCSVDataHandler(std::queue<Event>* eventQueue, std::string csvDirectory, std::vector<std::string> symbols, bool* continueBacktest) {
+SingleCSVDataHandler::SingleCSVDataHandler(std::queue<Event*>* eventQueue, std::string csvDirectory, std::vector<std::string> symbols, bool* continueBacktest) {
     this->eventQueue = eventQueue;
     this->csvDirectory = csvDirectory;
     this->symbols = symbols;
@@ -34,14 +34,14 @@ void SingleCSVDataHandler::loadData() {
         innerMap.insert(std::make_pair(std::stoll(lineVector[0]), std::make_tuple(std::stod(lineVector[3]), std::stod(lineVector[4]), std::stod(lineVector[5]), std::stod(lineVector[6]), std::stod(lineVector[8]))));
     }
 
-    data.insert(std::make_pair(symbols.at(0), innerMap));
+    this->data.insert(std::make_pair(symbols.at(0), innerMap));
 
     // initialize iterator over the data
-    bar = data.at(symbols.at(0)).begin();
+    this->bar = data.at(symbols.at(0)).begin();
 
     // initialize consumedData[symbol]
     innerMap.clear();
-    consumedData.insert(std::make_pair(symbols.at(0), innerMap));
+    this->consumedData.insert(std::make_pair(symbols.at(0), innerMap));
 }
 
 std::map<long long, std::tuple<double, double, double, double, double>> SingleCSVDataHandler::getLatestBars(std::string symbol, int n) {
@@ -66,5 +66,5 @@ void SingleCSVDataHandler::updateBars() {
         *continueBacktest = false;
     }
 
-    eventQueue->push(MarketEvent());
+    eventQueue->push(new MarketEvent());
 }

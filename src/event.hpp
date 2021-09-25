@@ -6,6 +6,8 @@ class Event {
 public:
     // event type
     std::string type;
+    // target portfolio
+    std::string target;
     virtual ~Event() = default;
 };
 
@@ -22,8 +24,6 @@ public:
     long long timestamp;
     // Range of [-1, 1], negative for going short, positive for going long, absolute value for signal strength
     double signal;
-    // target portfolio
-    std::string target;
 
     SignalEvent(std::string symbol, long long timestamp, double signal, std::string target);
 };
@@ -38,8 +38,6 @@ public:
     double quantity;
     // "LONG" for long, "SHORT" for short
     std::string direction;
-    // target portfolio
-    std::string target;
 
     OrderEvent(std::string symbol, std::string order_type, double quantity, std::string direction, std::string target);
 
@@ -63,8 +61,6 @@ public:
     double commission;
     // Slippage for the order as a percentage
     double slippage;
-    // target portfolio
-    std::string target;
 
     FillEvent(std::string symbol, long long timestamp, double quantity, std::string direction, double cost, std::string target);
 

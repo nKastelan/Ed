@@ -1,8 +1,8 @@
 #include "portfolio.hpp"
 
-SimplePortfolio::SimplePortfolio(DataHandler* dataHandler, std::queue<Event>* eventQueue, std::vector<std::string> symbols, double* initialCapital) {
+SimplePortfolio::SimplePortfolio(SingleCSVDataHandler* dataHandler, std::vector<std::string> symbols, double* initialCapital) {
 	this->dataHandler = dataHandler;
-	this->eventQueue = eventQueue;
+	this->eventQueue = dataHandler->eventQueue;
 	this->symbols = symbols;
 	this->initialCapital = initialCapital;
 	this->allPositions = constructAllPositions();
@@ -16,8 +16,7 @@ std::map<long long, std::unordered_map<std::string, double>> SimplePortfolio::co
 	for (auto symbol : symbols) {
 		innerMap.insert(std::make_pair(symbol, 0.0));
 	}
-	//auto firstTimestamp = dataHandler->getLatestBars(symbols.at(0)).begin()->first;
-	auto firstTimestamp = 0;
+	auto firstTimestamp = dataHandler->bar->first;
 	std::map<long long, std::unordered_map<std::string, double>> map;
 	map.insert(std::make_pair(firstTimestamp, innerMap));
 	return map;
@@ -42,7 +41,7 @@ std::map<long long, std::unordered_map<std::string, double>> SimplePortfolio::co
 	innerMap.insert(std::make_pair("total", *initialCapital));
 	innerMap.insert(std::make_pair("returns", 0.0));
 	innerMap.insert(std::make_pair("equityCurve", 0.0));
-	auto firstTimestamp = dataHandler->getLatestBars(symbols.at(0)).begin()->first;
+	auto firstTimestamp = dataHandler->bar->first;
 	std::map<long long, std::unordered_map<std::string, double>> map;
 	map.insert(std::make_pair(firstTimestamp, innerMap));
 	return map;
@@ -64,7 +63,7 @@ void SimplePortfolio::update() {
 	double notCash = 0.0;
 	auto prevTotal = allHoldings.rbegin()->second["total"];
 	auto prevEquityCurve = allHoldings.rbegin()->second["equityCurve"];
-	auto timeStamp = dataHandler->getLatestBars(symbols[0]).begin()->first;
+	auto timeStamp = dataHandler->getLatestBars(symbols.at(0)).begin()->first;
 	std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> lastBar;
 	for (auto symbol : symbols) {
 		lastBar.insert(std::make_pair(symbol, dataHandler->getLatestBars(symbol)));
@@ -136,7 +135,7 @@ void SimplePortfolio::generateOrder(SignalEvent event) {
 		direction = "SHORT";
 	}
 
-	eventQueue->push(OrderEvent(event.symbol, "MARKET", quantity, direction, event.target));
+	eventQueue->push(new OrderEvent(event.symbol, "MARKET", quantity, direction, event.target));
 }
 
 void SimplePortfolio::getMetrics() {

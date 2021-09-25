@@ -12,9 +12,9 @@ public:
 class SimplePortfolio: Portfolio {
 public:
 	// Pointer to the DataHandler used
-	DataHandler* dataHandler;
+	SingleCSVDataHandler* dataHandler;
 	// Pointer to the queue of Events
-	std::queue<Event>* eventQueue;
+	std::queue<Event*>* eventQueue;
 	// Symbols of the traded assets
 	std::vector<std::string> symbols;
 	// Starting value of the Portfolio in $
@@ -30,7 +30,7 @@ public:
 	// Performance metrics
 	std::unordered_map<std::string, double> performanceMetrics;
 
-	SimplePortfolio(DataHandler* dataHandler, std::queue<Event>* eventQueue, std::vector<std::string> symbols, double* initialCapital);
+	SimplePortfolio(SingleCSVDataHandler* dataHandler, std::vector<std::string> symbols, double* initialCapital);
 
 	SimplePortfolio() = default;
 

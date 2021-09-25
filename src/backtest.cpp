@@ -4,13 +4,13 @@ Backtest::Backtest(std::vector<std::string> symbols, std::string csvDirectory, d
 	this->symbols = symbols;
 	this->csvDirectory = csvDirectory;
 	this->initialCapital = initialCapital;
-	this->continueBacktest = false;
-	this->eventQueue;
-	this->exchange;
-	this->dataHandler = SingleCSVDataHandler(&eventQueue, csvDirectory, symbols, &continueBacktest);
-	this->portfolio = SimplePortfolio(&dataHandler, &eventQueue, symbols, initialCapital);
-	this->benchmarkDataHandler = SingleCSVDataHandler(&eventQueue, csvDirectory, symbols, &continueBacktest);
-	this->benchmarkPortfolio = SimplePortfolio(&benchmarkDataHandler, &eventQueue, symbols, initialCapital);
+	this->continueBacktest = false; 
+	this->eventQueue = new std::queue<Event*>;
+	this->dataHandler = SingleCSVDataHandler(eventQueue, csvDirectory, symbols, &continueBacktest);
+	this->portfolio = SimplePortfolio(&dataHandler, symbols, initialCapital);
+	this->benchmarkDataHandler = SingleCSVDataHandler(eventQueue, csvDirectory, symbols, &continueBacktest);
+	this->benchmarkPortfolio = SimplePortfolio(&benchmarkDataHandler, symbols, initialCapital);
+	this->exchange = InstantExecutionHandler(eventQueue, &dataHandler);
 }
 
 void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
@@ -24,42 +24,44 @@ void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
 
 	while (continueBacktest) {
 
-		if (!eventQueue.empty()) {
-			auto event = eventQueue.front();
+		if (!eventQueue->empty()) {
+			auto event = eventQueue->front();
 			
-			if (event.type == "MARKET") {
+			if (event->type == "MARKET") {
 				strategy.calculateSignals();
 				benchmark.calculateSignals();
 			}
-			else if (event.type == "SIGNAL") {
-				auto signal = dynamic_cast<SignalEvent*>(&event);
-				if (signal->target == "ALGO") {
+			else if (event->type == "SIGNAL") {
+				auto signal = dynamic_cast<SignalEvent*>(event);
+				if (event->target == "ALGO") {
 					portfolio.onSignal(*signal);
 				}
-				else if (signal->target == "BENCH") {
+				else if (event->target == "BENCH") {
 					benchmarkPortfolio.onSignal(*signal);
 				}
 			}
-			else if (event.type == "ORDER") {
-				auto order = dynamic_cast<OrderEvent*>(&event);
+			else if (event->type == "ORDER") {
+				auto order = dynamic_cast<OrderEvent*>(event);
 				exchange.executeOrder(*order);
 				order->logOrder();
 			}
-			else if (event.type == "FILL") {
-				auto fill = dynamic_cast<FillEvent*>(&event);
-				if (fill->target == "ALGO") {
+			else if (event->type == "FILL") {
+				auto fill = dynamic_cast<FillEvent*>(event);
+				if (fill->target.c_str() == "ALGO") {
 					portfolio.onFill(*fill);
 				}
-				else if (fill->target == "BENCH") {
+				else if (fill->target.c_str() == "BENCH") {
 					benchmarkPortfolio.onFill(*fill);
 				}
 			}
 
-			eventQueue.pop();
+			eventQueue->pop();
 		}
 		else {
 			portfolio.update();
+			dataHandler.updateBars();
 			benchmarkPortfolio.update();
+			benchmarkDataHandler.updateBars();
 		}
 	}
 }
