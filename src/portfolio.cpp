@@ -68,7 +68,7 @@ void SimplePortfolio::update() {
 	for (auto symbol : symbols) {
 		lastBar.insert(std::make_pair(symbol, dataHandler->getLatestBars(symbol)));
 		allPositions[timeStamp][symbol] = currentPositions[symbol];
-		auto currentValue = currentPositions.at(symbol) * lastBar.at(symbol).begin()->first;
+		auto currentValue = currentPositions.at(symbol) * std::get<3>(lastBar.at(symbol).begin()->second);
 		allHoldings[timeStamp][symbol] = currentValue;
 		currentHoldings[symbol] = currentValue;
 		notCash += currentValue;

@@ -1,6 +1,6 @@
 #include "executionHandler.hpp"
 
-InstantExecutionHandler::InstantExecutionHandler(std::queue<Event*>* eventQueue, DataHandler* dataHandler) {
+InstantExecutionHandler::InstantExecutionHandler(std::queue<Event*>* eventQueue, SingleCSVDataHandler* dataHandler) {
 	this->eventQueue = eventQueue;
 	this->dataHandler = dataHandler;
 }

@@ -21,6 +21,5 @@ int main(int argc, char **argv) {
 
     std::cout << "Done,backtesting took " << time.count() << "ms" << std::endl;
     
-
     return 0;
 }

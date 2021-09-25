@@ -5,14 +5,14 @@
 
 class ExecutionHandler {
 public:
-	std::queue<Event*>* eventQueue = 0;
-	DataHandler* dataHandler = 0;
+	std::queue<Event*>* eventQueue;
+	SingleCSVDataHandler* dataHandler;
 	virtual void executeOrder(OrderEvent order) = 0;
 };
 
-class InstantExecutionHandler : ExecutionHandler {
+class InstantExecutionHandler: ExecutionHandler {
 public:
-	InstantExecutionHandler(std::queue<Event*>* eventQueue, DataHandler* dataHandler);
+	InstantExecutionHandler(std::queue<Event*>* eventQueue, SingleCSVDataHandler* dataHandler);
 
 	InstantExecutionHandler() = default;
 

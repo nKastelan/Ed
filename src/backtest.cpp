@@ -1,16 +1,15 @@
 #include "backtest.hpp"
 
-Backtest::Backtest(std::vector<std::string> symbols, std::string csvDirectory, double* initialCapital) {
+Backtest::Backtest(std::vector<std::string> symbols, std::string csvDirectory, double* initialCapital) : exchange(&eventQueue, &dataHandler) {
 	this->symbols = symbols;
 	this->csvDirectory = csvDirectory;
 	this->initialCapital = initialCapital;
 	this->continueBacktest = false; 
-	this->eventQueue = new std::queue<Event*>;
-	this->dataHandler = SingleCSVDataHandler(eventQueue, csvDirectory, symbols, &continueBacktest);
+	//this->eventQueue = new std::queue<Event*>;
+	this->dataHandler = SingleCSVDataHandler(&eventQueue, csvDirectory, symbols, &continueBacktest);
 	this->portfolio = SimplePortfolio(&dataHandler, symbols, initialCapital);
-	this->benchmarkDataHandler = SingleCSVDataHandler(eventQueue, csvDirectory, symbols, &continueBacktest);
+	this->benchmarkDataHandler = SingleCSVDataHandler(&eventQueue, csvDirectory, symbols, &continueBacktest);
 	this->benchmarkPortfolio = SimplePortfolio(&benchmarkDataHandler, symbols, initialCapital);
-	this->exchange = InstantExecutionHandler(eventQueue, &dataHandler);
 }
 
 void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
@@ -24,8 +23,8 @@ void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
 
 	while (continueBacktest) {
 
-		if (!eventQueue->empty()) {
-			auto event = eventQueue->front();
+		if (!eventQueue.empty()) {
+			auto event = eventQueue.front();
 			
 			if (event->type == "MARKET") {
 				strategy.calculateSignals();
@@ -47,15 +46,15 @@ void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
 			}
 			else if (event->type == "FILL") {
 				auto fill = dynamic_cast<FillEvent*>(event);
-				if (fill->target.c_str() == "ALGO") {
+				if (event->target == "ALGO") {
 					portfolio.onFill(*fill);
 				}
-				else if (fill->target.c_str() == "BENCH") {
+				else if (event->target == "BENCH") {
 					benchmarkPortfolio.onFill(*fill);
 				}
 			}
 
-			eventQueue->pop();
+			eventQueue.pop();
 		}
 		else {
 			portfolio.update();
