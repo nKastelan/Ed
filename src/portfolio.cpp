@@ -63,12 +63,13 @@ void SimplePortfolio::update() {
 	double notCash = 0.0;
 	auto prevTotal = allHoldings.rbegin()->second["total"];
 	auto prevEquityCurve = allHoldings.rbegin()->second["equityCurve"];
-	auto timeStamp = dataHandler->getLatestBars(symbols.at(0)).begin()->first;
-	std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> lastBar;
+	auto timeStamp = dataHandler->getLatestBars(symbols.at(0)).rbegin()->first;
+	//std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> lastBar;
 	for (auto symbol : symbols) {
-		lastBar.insert(std::make_pair(symbol, dataHandler->getLatestBars(symbol)));
+		//lastBar.insert(std::make_pair(symbol, dataHandler->getLatestBars(symbol)));
 		allPositions[timeStamp][symbol] = currentPositions[symbol];
-		auto currentValue = currentPositions.at(symbol) * std::get<3>(lastBar.at(symbol).begin()->second);
+		auto price = std::get<3>(dataHandler->getLatestBars(symbol).rbegin()->second);
+		auto currentValue = currentPositions.at(symbol) * price;
 		allHoldings[timeStamp][symbol] = currentValue;
 		currentHoldings[symbol] = currentValue;
 		notCash += currentValue;

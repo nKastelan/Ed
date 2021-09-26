@@ -60,7 +60,7 @@ std::map<long long, std::tuple<double, double, double, double, double>> SingleCS
 void SingleCSVDataHandler::updateBars() {
     // add a bar to "consumedData"
     if (bar != data.at(symbols.at(0)).end()) {
-        consumedData.at(symbols.at(0)).insert(std::make_pair(bar->first, bar->second));
+        consumedData[symbols[0]][bar->first] =  bar->second;
         ++bar;
     } else {
         *continueBacktest = false;
