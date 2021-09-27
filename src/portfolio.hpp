@@ -2,6 +2,7 @@
 #include "event.hpp"
 #include "dataHandler.hpp"
 #include "ta_libc.h"
+#include <math.h>
 
 class Portfolio {
 public:
@@ -28,7 +29,7 @@ public:
 	// All the current holdings
 	std::unordered_map<std::string, double> currentHoldings;
 	// Performance metrics
-	std::unordered_map<std::string, double> performanceMetrics;
+	std::map<std::string, double> performanceMetrics;
 
 	SimplePortfolio(SingleCSVDataHandler* dataHandler, std::vector<std::string> symbols, double* initialCapital);
 

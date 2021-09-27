@@ -138,5 +138,47 @@ void SimplePortfolio::generateOrder(SignalEvent event) {
 }
 
 void SimplePortfolio::getMetrics() {
-	//
+	auto rit = dataHandler->consumedData.at(symbols[0]).rbegin();
+	// unix difference between two data points, needed for proper annualization
+	auto diff = rit->first - (++rit)->first;
+	// 86'400'000 for daily data
+	// 3'600'000 for hourly data
+	// 60'000 for minute data
+
+	int period;
+	switch (diff) {
+	case 86'400'000:
+		period = 365;
+		break; 
+
+	case 3'600'000: 
+		period = 365*24;
+		break;
+		
+	case 60'000: 
+		period = 365*24*60;
+		break;
+		
+	}
+
+	double mean = 0;
+	for (auto bar : allHoldings) {
+		mean += bar.second.at("returns");
+	}
+	mean /= allHoldings.size();
+
+	double std = 0;
+	for (auto bar : allHoldings) {
+		std += pow(bar.second.at("returns") - mean, 2);
+	}
+	std /= allHoldings.size();
+
+	double sharpe = mean / std;
+	performanceMetrics["Sharpe"] = sharpe;
+	double annSharpe = sqrt(period) * mean / std;
+	performanceMetrics["Sharpe (Annualized)"] = annSharpe;
+
+	for (auto metric : performanceMetrics) {
+		std::cout << metric.first << ": " << metric.second << std::endl;
+	}
 }

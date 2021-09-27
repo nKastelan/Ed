@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     double initialCapital = 1000;
     std::vector<std::string> symbols;
     symbols.push_back("ETH/USDT");
-    auto backtest = Backtest(symbols, "data/Binance_ETHUSDT_minute.csv", &initialCapital);
+    auto backtest = Backtest(symbols, "data/Binance_ETHUSDT_d.csv", &initialCapital);
     auto strategy = TradingStrategy(&backtest.dataHandler);
     auto benchmark = Benchmark(&backtest.dataHandler);
 
@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     auto end = std::chrono::high_resolution_clock::now();
     auto time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-    std::cout << "Done,backtesting took " << time.count() << "ms" << std::endl;
+    std::cout << "\nDone, backtesting took " << time.count() << "ms" << std::endl;
     
     return 0;
 }

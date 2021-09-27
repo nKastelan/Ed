@@ -68,4 +68,11 @@ void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
 
 		dataHandler.updateBars();
 	}
+
+	std::cout << "Backtest ended!\n" << std::endl;
+
+	std::cout << "PERFORMANCE METRICS (TRADING STRATEGY)" << std::endl;
+	portfolio.getMetrics();
+	std::cout << "\nPERFORMANCE METRICS (BENCHMARK)" << std::endl;
+	benchmarkPortfolio.getMetrics();
 }
