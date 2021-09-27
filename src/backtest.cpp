@@ -5,7 +5,6 @@ Backtest::Backtest(std::vector<std::string> symbols, std::string csvDirectory, d
 	this->csvDirectory = csvDirectory;
 	this->initialCapital = initialCapital;
 	this->continueBacktest = false; 
-	//this->eventQueue = new std::queue<Event*>;
 	this->dataHandler = SingleCSVDataHandler(&eventQueue, csvDirectory, symbols, &continueBacktest);
 	this->portfolio = SimplePortfolio(&dataHandler, symbols, initialCapital);
 	this->benchmarkDataHandler = SingleCSVDataHandler(&eventQueue, csvDirectory, symbols, &continueBacktest);
@@ -23,14 +22,21 @@ void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
 
 	while (continueBacktest) {
 
-		if (!eventQueue.empty()) {
+		while (!eventQueue.empty()) {
 			auto event = eventQueue.front();
-			
-			if (event->type == "MARKET") {
+			eventQueue.pop();
+
+			switch (event->type) {
+
+			case 0: {
 				strategy.calculateSignals();
 				benchmark.calculateSignals();
-			}
-			else if (event->type == "SIGNAL") {
+				portfolio.update();
+				benchmarkPortfolio.update();
+				break;
+				}
+
+			case 1: {
 				auto signal = dynamic_cast<SignalEvent*>(event);
 				if (event->target == "ALGO") {
 					portfolio.onSignal(*signal);
@@ -38,29 +44,31 @@ void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
 				else if (event->target == "BENCH") {
 					benchmarkPortfolio.onSignal(*signal);
 				}
-			}
-			else if (event->type == "ORDER") {
+				break;
+				}
+
+			case 2: {
 				auto order = dynamic_cast<OrderEvent*>(event);
 				exchange.executeOrder(*order);
 				order->logOrder();
-			}
-			else if (event->type == "FILL") {
+				break;
+				}
+
+			case 3: {
 				auto fill = dynamic_cast<FillEvent*>(event);
 				if (event->target == "ALGO") {
 					portfolio.onFill(*fill);
+					portfolio.update();
 				}
 				else if (event->target == "BENCH") {
 					benchmarkPortfolio.onFill(*fill);
+					benchmarkPortfolio.update();
+				}
+				break;
 				}
 			}
+		}
 
-			eventQueue.pop();
-		}
-		else {
-			portfolio.update();
-			dataHandler.updateBars();
-			benchmarkPortfolio.update();
-			benchmarkDataHandler.updateBars();
-		}
+		dataHandler.updateBars();
 	}
 }

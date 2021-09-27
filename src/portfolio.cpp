@@ -60,15 +60,13 @@ std::unordered_map<std::string, double> SimplePortfolio::constructCurrentHolding
 }
 
 void SimplePortfolio::update() {
-	double notCash = 0.0;
+	auto notCash = 0.0;
 	auto prevTotal = allHoldings.rbegin()->second["total"];
 	auto prevEquityCurve = allHoldings.rbegin()->second["equityCurve"];
-	auto timeStamp = dataHandler->getLatestBars(symbols.at(0)).rbegin()->first;
-	//std::unordered_map<std::string, std::map<long long, std::tuple<double, double, double, double, double>>> lastBar;
+	auto timeStamp = dataHandler->consumedData.at(symbols[0]).rbegin()->first;
 	for (auto symbol : symbols) {
-		//lastBar.insert(std::make_pair(symbol, dataHandler->getLatestBars(symbol)));
 		allPositions[timeStamp][symbol] = currentPositions[symbol];
-		auto price = std::get<3>(dataHandler->getLatestBars(symbol).rbegin()->second);
+		auto price = std::get<3>(dataHandler->consumedData.at(symbol).rbegin()->second);
 		auto currentValue = currentPositions.at(symbol) * price;
 		allHoldings[timeStamp][symbol] = currentValue;
 		currentHoldings[symbol] = currentValue;
@@ -108,7 +106,7 @@ void SimplePortfolio::updateHoldingsOnFill(FillEvent fill) {
 		direction = -1;
 	}
 
-	auto price = std::get<3>(dataHandler->getLatestBars(fill.symbol).rbegin()->second);
+	auto price = std::get<3>(dataHandler->consumedData.at(fill.symbol).rbegin()->second);
 	auto cost = direction * fill.quantity * price;
 
 	currentHoldings[fill.symbol] += cost;
@@ -128,7 +126,7 @@ void SimplePortfolio::onFill(FillEvent event) {
 }
 
 void SimplePortfolio::generateOrder(SignalEvent event) {
-	double quantity = 10;
+	double quantity = 1;
 	std::string direction;
 	if (event.signal > 0) {
 		direction = "LONG";

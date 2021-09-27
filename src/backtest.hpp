@@ -3,6 +3,7 @@
 #include "executionHandler.hpp"
 #include "portfolio.hpp"
 #include "strategies/strategy.hpp"
+#include <future>
 
 class Backtest {
 public:

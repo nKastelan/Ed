@@ -5,7 +5,7 @@
 class Event {
 public:
     // event type
-    std::string type;
+    int type;
     // target portfolio
     std::string target;
     virtual ~Event() = default;
