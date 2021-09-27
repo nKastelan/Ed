@@ -7,16 +7,13 @@ Backtest::Backtest(std::vector<std::string> symbols, std::string csvDirectory, d
 	this->continueBacktest = false; 
 	this->dataHandler = SingleCSVDataHandler(&eventQueue, csvDirectory, symbols, &continueBacktest);
 	this->portfolio = SimplePortfolio(&dataHandler, symbols, initialCapital);
-	this->benchmarkDataHandler = SingleCSVDataHandler(&eventQueue, csvDirectory, symbols, &continueBacktest);
-	this->benchmarkPortfolio = SimplePortfolio(&benchmarkDataHandler, symbols, initialCapital);
+	this->benchmarkPortfolio = SimplePortfolio(&dataHandler, symbols, initialCapital);
 }
 
 void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
 	continueBacktest = true;
 	dataHandler.loadData();
 	dataHandler.updateBars();
-	benchmarkDataHandler.loadData();
-	benchmarkDataHandler.updateBars();
 
 	std::cout << "Backtest started!" << std::endl;
 

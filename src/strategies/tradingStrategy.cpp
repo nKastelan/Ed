@@ -5,19 +5,18 @@ TradingStrategy::TradingStrategy(SingleCSVDataHandler* dataHandler) {
 	this->eventQueue = dataHandler->eventQueue;
 
 	std::unordered_map<std::string, bool> bought;
-	auto size = dataHandler->symbols.size();
-	for (unsigned int i = 0; i < size; ++i) {
-		bought.insert(std::make_pair(dataHandler->symbols.at(i), false));
+	for (auto symbol : dataHandler->symbols) {
+		bought[symbol] = false;
 	}
 
 	this->bought = bought;
 }
 
 void TradingStrategy::calculateSignals() {
-	for (auto symbol : this->dataHandler->symbols) {
-		if (!this->bought.at(symbol)) {
-			auto timestamp = this->dataHandler->getLatestBars(symbol).begin()->first;
-			this->eventQueue->push(new SignalEvent(symbol, timestamp, 1.0, "ALGO"));
+	for (auto symbol : dataHandler->symbols) {
+		if (!bought.at(symbol)) {
+			auto timestamp = dataHandler->consumedData.at(symbol).begin()->first;
+			eventQueue->push(new SignalEvent(symbol, timestamp, 1.0, "ALGO"));
 			bought[symbol] = true;
 		}
 	}

@@ -16,7 +16,6 @@ public:
 	SimplePortfolio portfolio;
 	SingleCSVDataHandler dataHandler;
 	TradingStrategy strategy;
-	SingleCSVDataHandler benchmarkDataHandler;
 	SimplePortfolio benchmarkPortfolio;
 	Benchmark benchmark;
 
