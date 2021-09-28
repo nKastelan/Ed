@@ -188,8 +188,24 @@ void SimplePortfolio::getMetrics() {
 	std = sqrt(std);
 	performanceMetrics["Returns (StD Daily)"] = std * sqrt(period / 365);
 
+	double negativeBars = std::accumulate(allHoldings.begin(), allHoldings.end(), 0.0,
+		[](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p)
+		{if (p.second.at("returns") < 0) return ++value; else return value; });
+	performanceMetrics["Positive bars"] = (allHoldings.size() - negativeBars) / allHoldings.size();
+	
+	double stdDownside = std::accumulate(allHoldings.begin(), allHoldings.end(), 0.0,
+		[](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p)
+		{if (p.second.at("returns") < 0) return value + pow(p.second.at("returns"), 2); else return value; });
+	stdDownside /= negativeBars - 1;
+	stdDownside = sqrt(stdDownside);
+	performanceMetrics["Returns (StD Downside Daily)"] = stdDownside * sqrt(period / 365);
+	
 	double annSharpe = sqrt(period) * (mean) / std;
 	performanceMetrics["Sharpe (Annualized)"] = annSharpe;
+	
+	double annSortino = sqrt(period) * (mean) / stdDownside;
+	performanceMetrics["Sortino (Annualized)"] = annSortino;
+	
 
 	for (auto metric : performanceMetrics) {
 		std::cout << metric.first << ": " << metric.second << std::endl;
