@@ -3,6 +3,7 @@
 #include "dataHandler.hpp"
 #include "ta_libc.h"
 #include <math.h>
+#include <numeric>
 
 class Portfolio {
 public:

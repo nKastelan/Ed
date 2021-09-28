@@ -126,7 +126,7 @@ void SimplePortfolio::onFill(FillEvent event) {
 }
 
 void SimplePortfolio::generateOrder(SignalEvent event) {
-	double quantity = 1;
+	double quantity = 2;
 	std::string direction;
 	if (event.signal > 0) {
 		direction = "LONG";
@@ -145,7 +145,7 @@ void SimplePortfolio::getMetrics() {
 	// 3'600'000 for hourly data
 	// 60'000 for minute data
 
-	int period;
+	int period = 0;
 	switch (diff) {
 	case 86'400'000:
 		period = 365;
@@ -161,21 +161,21 @@ void SimplePortfolio::getMetrics() {
 		
 	}
 
-	double mean = 0;
-	for (auto bar : allHoldings) {
-		mean += bar.second.at("returns");
-	}
+	
+	double mean = std::accumulate(allHoldings.begin(), allHoldings.end(), 0.0, 
+		[](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p) 
+		{return value + p.second.at("returns");});
 	mean /= allHoldings.size();
+	performanceMetrics["Returns (Mean Daily)"] = mean * (period / 365);
 
-	double std = 0;
-	for (auto bar : allHoldings) {
-		std += pow(bar.second.at("returns") - mean, 2);
-	}
-	std /= allHoldings.size();
+	double std = std::accumulate(allHoldings.begin(), allHoldings.end(), 0.0,
+		[](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p)
+		{return value + pow(p.second.at("returns"), 2); });
+	std /= allHoldings.size() - 1;
+	std = sqrt(std);
+	performanceMetrics["Returns (StD Daily)"] = std * sqrt(period / 365);
 
-	double sharpe = mean / std;
-	performanceMetrics["Sharpe"] = sharpe;
-	double annSharpe = sqrt(period) * mean / std;
+	double annSharpe = sqrt(period) * (mean) / std;
 	performanceMetrics["Sharpe (Annualized)"] = annSharpe;
 
 	for (auto metric : performanceMetrics) {
