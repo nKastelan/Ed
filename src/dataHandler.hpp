@@ -12,7 +12,7 @@ public:
     // Path to the csv data files
     std::string csvDirectory;
     // Queue of Events
-    std::queue<Event*>* eventQueue = 0;
+    std::queue<std::shared_ptr<Event>>* eventQueue = 0;
     // Flag variable
     bool* continueBacktest = 0;
     // Symbols of the traded assets
@@ -35,7 +35,7 @@ public:
     // Iterator over the historical data contained in "data"
     std::map<long long, std::tuple<double, double, double, double, double>>::iterator bar;
 
-    SingleCSVDataHandler(std::queue<Event*>* eventQueue, std::string csvDirectory, std::vector<std::string> symbol, bool* continueBacktest);
+    SingleCSVDataHandler(std::queue<std::shared_ptr<Event>>* eventQueue, std::string csvDirectory, std::vector<std::string> symbol, bool* continueBacktest);
 
     SingleCSVDataHandler() = default;
 

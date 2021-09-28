@@ -16,7 +16,7 @@ void Benchmark::calculateSignals() {
 	for (auto symbol : dataHandler->symbols) {
 		if (!bought.at(symbol)) {
 			auto timestamp = dataHandler->consumedData.at(symbol).begin()->first;
-			eventQueue->push(new SignalEvent(symbol, timestamp, 1.0, "BENCH"));
+			eventQueue->push(std::make_shared<SignalEvent>(symbol, timestamp, 1.0, "BENCH"));
 			bought[symbol] = true;
 		}
 	}

@@ -11,7 +11,7 @@ public:
 	std::string csvDirectory;
 	double* initialCapital;
 	bool continueBacktest;
-	std::queue<Event*> eventQueue;
+	std::queue<std::shared_ptr<Event>> eventQueue;
 	InstantExecutionHandler exchange;
 	SimplePortfolio portfolio;
 	SingleCSVDataHandler dataHandler;

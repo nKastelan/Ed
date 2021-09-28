@@ -1,6 +1,6 @@
 #include "dataHandler.hpp"
 
-SingleCSVDataHandler::SingleCSVDataHandler(std::queue<Event*>* eventQueue, std::string csvDirectory, std::vector<std::string> symbols, bool* continueBacktest) {
+SingleCSVDataHandler::SingleCSVDataHandler(std::queue<std::shared_ptr<Event>>* eventQueue, std::string csvDirectory, std::vector<std::string> symbols, bool* continueBacktest) {
     this->eventQueue = eventQueue;
     this->csvDirectory = csvDirectory;
     this->symbols = symbols;
@@ -66,5 +66,5 @@ void SingleCSVDataHandler::updateBars() {
         *continueBacktest = false;
     }
 
-    eventQueue->push(new MarketEvent());
+    eventQueue->push(std::make_shared<MarketEvent>());
 }

@@ -14,7 +14,7 @@ public:
 	// Pointer to the DataHandler used
 	SingleCSVDataHandler* dataHandler;
 	// Pointer to the eventQueue, accesible with dataHandler.eventQueue
-	std::queue<Event*>* eventQueue;
+	std::queue<std::shared_ptr<Event>>* eventQueue;
 	// Flag variable to indicate if the assets are bought
 	std::unordered_map<std::string, bool> bought;
 
@@ -31,7 +31,7 @@ public:
 	// Pointer to the DataHandler used
 	SingleCSVDataHandler* dataHandler;
 	// Pointer to the eventQueue, accesible with dataHandler.eventQueue
-	std::queue<Event*>* eventQueue;
+	std::queue<std::shared_ptr<Event>>* eventQueue;
 	// Flag variable to indicate if the assets are bought
 	std::unordered_map<std::string, bool> bought;
 

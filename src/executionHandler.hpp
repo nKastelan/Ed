@@ -5,14 +5,14 @@
 
 class ExecutionHandler {
 public:
-	std::queue<Event*>* eventQueue;
+	std::queue<std::shared_ptr<Event>>* eventQueue;
 	SingleCSVDataHandler* dataHandler;
 	virtual void executeOrder(OrderEvent order) = 0;
 };
 
 class InstantExecutionHandler: ExecutionHandler {
 public:
-	InstantExecutionHandler(std::queue<Event*>* eventQueue, SingleCSVDataHandler* dataHandler);
+	InstantExecutionHandler(std::queue<std::shared_ptr<Event>>* eventQueue, SingleCSVDataHandler* dataHandler);
 
 	InstantExecutionHandler() = default;
 

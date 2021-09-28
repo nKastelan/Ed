@@ -126,7 +126,14 @@ void SimplePortfolio::onFill(FillEvent event) {
 }
 
 void SimplePortfolio::generateOrder(SignalEvent event) {
-	double quantity = 2;
+	double quantity = 0;
+	if (event.target == "BENCH") {
+		quantity = getMaxQuantity(&event);
+	}
+	else {
+		quantity = 2;
+	}
+	
 	std::string direction;
 	if (event.signal > 0) {
 		direction = "LONG";
@@ -134,7 +141,13 @@ void SimplePortfolio::generateOrder(SignalEvent event) {
 		direction = "SHORT";
 	}
 
-	eventQueue->push(new OrderEvent(event.symbol, "MARKET", quantity, direction, event.target));
+	eventQueue->push(std::make_shared<OrderEvent>(event.symbol, "MARKET", quantity, direction, event.target));
+}
+
+double SimplePortfolio::getMaxQuantity(SignalEvent* event) {
+	auto cash = currentHoldings.at("cash");
+	auto price = std::get<3>(dataHandler->consumedData.at(event->symbol).rbegin()->second);
+	return cash / price;
 }
 
 void SimplePortfolio::getMetrics() {

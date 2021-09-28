@@ -4,6 +4,7 @@
 #include "ta_libc.h"
 #include <math.h>
 #include <numeric>
+#include <memory>
 
 class Portfolio {
 public:
@@ -16,7 +17,7 @@ public:
 	// Pointer to the DataHandler used
 	SingleCSVDataHandler* dataHandler;
 	// Pointer to the queue of Events
-	std::queue<Event*>* eventQueue;
+	std::queue<std::shared_ptr<Event>>* eventQueue;
 	// Symbols of the traded assets
 	std::vector<std::string> symbols;
 	// Starting value of the Portfolio in $
@@ -61,6 +62,9 @@ public:
 
 	// Sends orders
 	void generateOrder(SignalEvent event);
+
+	// Calculates the max amount we are able to order with the available cash
+	double getMaxQuantity(SignalEvent* event);
 
 	// Calculates and returns the performance metrics
 	void getMetrics();
