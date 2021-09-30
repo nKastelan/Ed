@@ -4,6 +4,7 @@
 #include "ta_libc.h"
 #include <math.h>
 #include <numeric>
+#include <algorithm>
 #include <memory>
 
 class Portfolio {

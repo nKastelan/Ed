@@ -179,33 +179,61 @@ void SimplePortfolio::getMetrics() {
 		[](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p) 
 		{return value + p.second.at("returns");});
 	mean /= allHoldings.size();
-	performanceMetrics["Returns (Mean Daily)"] = mean * (period / 365);
+	performanceMetrics["Return (Avg. Daily) [%]"] = mean * (period / 365) * 100;
 
 	double std = std::accumulate(allHoldings.begin(), allHoldings.end(), 0.0,
 		[](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p)
 		{return value + pow(p.second.at("returns"), 2); });
 	std /= allHoldings.size() - 1;
 	std = sqrt(std);
-	performanceMetrics["Returns (StD Daily)"] = std * sqrt(period / 365);
+	performanceMetrics["Volatility (Daily) [%]"] = std * sqrt(period / 365) * 100;
 
+	
 	double negativeBars = std::accumulate(allHoldings.begin(), allHoldings.end(), 0.0,
 		[](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p)
 		{if (p.second.at("returns") < 0) return ++value; else return value; });
-	performanceMetrics["Positive bars"] = (allHoldings.size() - negativeBars) / allHoldings.size();
+	performanceMetrics["Positive Bars [%]"] = (allHoldings.size() - negativeBars) / allHoldings.size() * 100;
 	
 	double stdDownside = std::accumulate(allHoldings.begin(), allHoldings.end(), 0.0,
 		[](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p)
 		{if (p.second.at("returns") < 0) return value + pow(p.second.at("returns"), 2); else return value; });
 	stdDownside /= negativeBars - 1;
 	stdDownside = sqrt(stdDownside);
-	performanceMetrics["Returns (StD Downside Daily)"] = stdDownside * sqrt(period / 365);
+	performanceMetrics["Volatility Downside (Daily) [%]"] = stdDownside * sqrt(period / 365) * 100;
 	
-	double annSharpe = sqrt(period) * (mean) / std;
-	performanceMetrics["Sharpe (Annualized)"] = annSharpe;
+	double annSharpe = sqrt(period) * mean / std;
+	performanceMetrics["Sharpe (Ann.)"] = annSharpe;
 	
-	double annSortino = sqrt(period) * (mean) / stdDownside;
-	performanceMetrics["Sortino (Annualized)"] = annSortino;
-	
+	double annSortino = sqrt(period) * mean / stdDownside;
+	performanceMetrics["Sortino (Ann.)"] = annSortino;
+
+	double equityPeak = std::max_element(allHoldings.begin(), allHoldings.end(), 
+		[](const std::map<long long, std::unordered_map<std::string, double>>::value_type& p1,
+			const std::map<long long, std::unordered_map<std::string, double>>::value_type& p2)
+		{return p1.second.at("total") < p2.second.at("total"); })->second.at("total");
+	performanceMetrics["Equity Peak [$]"] = equityPeak;
+
+	double equityBottom = std::min_element(allHoldings.begin(), allHoldings.end(),
+		[](const std::map<long long, std::unordered_map<std::string, double>>::value_type& p1,
+			const std::map<long long, std::unordered_map<std::string, double>>::value_type& p2)
+		{return p1.second.at("total") < p2.second.at("total"); })->second.at("total");
+	performanceMetrics["Equity Bottom [$]"] = equityBottom;
+
+	double equityFinal = allHoldings.rbegin()->second.at("total");
+	performanceMetrics["Equity Final [$]"] = equityFinal;
+
+	double years = (double)allHoldings.size() / period;
+	performanceMetrics["Duration [years]"] = years;
+
+	performanceMetrics["CAGR [%]"] = (pow(equityFinal / *initialCapital, 1 / years) - 1) * 100;
+
+	double returns = equityFinal / *initialCapital * 100;
+	performanceMetrics["Return [%]"] = returns;
+
+	double exposure = std::accumulate(allPositions.begin(), allPositions.end(), 0.0,
+		[this](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p)
+		{for (auto symbol : symbols) { if (p.second.at(symbol) != 0) return ++value; else return value; }});
+	performanceMetrics["Exposure Time [%]"] = exposure / allPositions.size() * 100;
 
 	for (auto metric : performanceMetrics) {
 		std::cout << metric.first << ": " << metric.second << std::endl;
