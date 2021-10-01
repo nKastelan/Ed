@@ -9,10 +9,16 @@ int main(int argc, char **argv) {
     double initialCapital = 1000;
     std::vector<std::string> symbols;
     symbols.push_back("ETH/USDT");
-    auto backtest = Backtest(symbols, "data/Binance_ETHUSDT_minute.csv", &initialCapital);
+    auto backtest = Backtest(symbols, "data/Binance_ETHUSDT_day.csv", &initialCapital);
     auto strategy = TradingStrategy(&backtest.dataHandler);
     auto benchmark = Benchmark(&backtest.dataHandler);
-
+    
+    auto retCode = TA_Initialize();
+    if (retCode != TA_SUCCESS) {
+        std::cout << "CANNOT INITIALIZE TA-LIB!" << std::endl;
+        return -1;
+    }
+    
 
     auto start = std::chrono::high_resolution_clock::now();
     backtest.run(strategy, benchmark);
@@ -21,5 +27,5 @@ int main(int argc, char **argv) {
 
     std::cout << "\nDone, backtesting took " << time.count() << "ms" << std::endl;
     
-    return 0;
+    return TA_Shutdown();
 }

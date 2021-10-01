@@ -131,7 +131,7 @@ void SimplePortfolio::generateOrder(SignalEvent event) {
 		quantity = getMaxQuantity(&event);
 	}
 	else {
-		quantity = 2;
+		quantity = getMaxQuantity(&event);
 	}
 	
 	std::string direction;
@@ -234,6 +234,7 @@ void SimplePortfolio::getMetrics() {
 		[this](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p)
 		{for (auto symbol : symbols) { if (p.second.at(symbol) != 0) return ++value; else return value; }});
 	performanceMetrics["Exposure Time [%]"] = exposure / allPositions.size() * 100;
+
 
 	for (auto metric : performanceMetrics) {
 		std::cout << metric.first << ": " << metric.second << std::endl;

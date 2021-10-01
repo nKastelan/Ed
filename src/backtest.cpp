@@ -47,7 +47,7 @@ void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
 			case 2: {
 				auto order = dynamic_pointer_cast<OrderEvent>(event);
 				exchange.executeOrder(*order);
-				order->logOrder();
+				//order->logOrder();
 				break;
 				}
 
