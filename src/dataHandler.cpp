@@ -28,31 +28,31 @@ void SingleCSVDataHandler::loadData() {
         std::vector<std::string> lineVector;
 
         while (std::getline(ss, lineItem, ',')) {
-            lineVector.push_back(lineItem);
+            lineVector.emplace_back(lineItem);
         }
-        
-        innerMap.insert(std::make_pair(std::stoll(lineVector[0]), std::make_tuple(std::stod(lineVector[3]), std::stod(lineVector[4]), std::stod(lineVector[5]), std::stod(lineVector[6]), std::stod(lineVector[8]))));
+
+        innerMap.insert({ std::stoll(lineVector[0]), std::make_tuple(std::stod(lineVector[3]), std::stod(lineVector[4]), std::stod(lineVector[5]), std::stod(lineVector[6]), std::stod(lineVector[8])) });
     }
 
-    this->data.insert(std::make_pair(symbols.at(0), innerMap));
+    this->data.insert(std::make_pair(symbols[0], innerMap));
 
     // initialize iterator over the data
-    this->bar = data.at(symbols.at(0)).begin();
+    this->bar = data[symbols[0]].begin();
 
     // initialize consumedData[symbol]
     innerMap.clear();
-    this->consumedData.insert(std::make_pair(symbols.at(0), innerMap));
+    this->consumedData.insert(std::make_pair(symbols[0], innerMap));
 }
 
-std::map<long long, std::tuple<double, double, double, double, double>> SingleCSVDataHandler::getLatestBars(std::string symbol, int n) {
-    auto map = this->consumedData.at(symbol);
-    std::map<long long, std::tuple<double, double, double, double, double>> res;
+std::vector<std::tuple<double, double, double, double, double>> SingleCSVDataHandler::getLatestBars(std::string* symbol, int n) {
+    std::vector<std::tuple<double, double, double, double, double>> res;
+    res.reserve(n);
 
     // Returns an empty object if there is not enough data in "consumedData"
-    if (map.size() < n) return res;
+    if (this->consumedData[*symbol].size() < n) return res;
 
-    for (auto rit = map.rbegin(); n > 0 && rit != map.rend(); ++rit, --n) {
-        res[rit->first] =  rit->second;
+    for (auto rit = this->consumedData[*symbol].rbegin(); n > 0 && rit != this->consumedData[*symbol].rend(); ++rit, --n) {
+        res.emplace_back(rit->second);
     }
 
     return res;
@@ -60,7 +60,7 @@ std::map<long long, std::tuple<double, double, double, double, double>> SingleCS
 
 void SingleCSVDataHandler::updateBars() {
     // add a bar to "consumedData"
-    if (bar != data.at(symbols.at(0)).end()) {
+    if (bar != data[symbols[0]].end()) {
         consumedData[symbols[0]][bar->first] =  bar->second;
         ++bar;
     } else {

@@ -19,7 +19,7 @@ public:
     std::vector<std::string> symbols;
 
     virtual void loadData() = 0;
-    virtual std::map<long long, std::tuple<double, double, double, double, double>> getLatestBars(std::string symbol, int n = 1) = 0;
+    virtual std::vector<std::tuple<double, double, double, double, double>> getLatestBars(std::string* symbol, int n = 1) = 0;
     virtual void updateBars() = 0;
     virtual ~DataHandler() = default;
 };
@@ -42,8 +42,8 @@ public:
     // Formats and loads the data into memory ("data")
     void loadData();
 
-    // Returns the "n" latest bars in format <timestamp, [open, high, low, close, volume]>
-    std::map<long long, std::tuple<double, double, double, double, double>> getLatestBars(std::string symbol, int n = 1);
+    // Returns the "n" latest bars in format <[open, high, low, close, volume]>
+    std::vector<std::tuple<double, double, double, double, double>> getLatestBars(std::string* symbol, int n = 1);
 
     // Pushes the latest bar onto the "eventQueue"
     void updateBars();

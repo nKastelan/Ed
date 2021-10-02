@@ -13,14 +13,16 @@ TradingStrategy::TradingStrategy(SingleCSVDataHandler* dataHandler) {
 }
 
 void TradingStrategy::calculateSignals() {
-	int n = 18;
+	int n = 150;
 	for (auto symbol : dataHandler->symbols) {
 		int direction = 0;
 
 		std::vector<double> closes;
-		auto data = this->dataHandler->getLatestBars(symbol, n + 1);
+		closes.reserve(n + 1);
+		
+		auto data = dataHandler->getLatestBars(&symbol, n + 1);
 		for (auto close : data) {
-			closes.push_back(std::get<3>(close.second));
+			closes.emplace_back(std::get<3>(close));
 		}
 		
 		double rsi = 0;
@@ -33,7 +35,7 @@ void TradingStrategy::calculateSignals() {
 			return;
 		}
 		else {
-			if (rsi > 70) {
+			if (rsi > 75) {
 				direction = -1;
 			}
 			else if (rsi < 30) {
