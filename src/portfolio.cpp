@@ -126,7 +126,7 @@ void SimplePortfolio::onFill(FillEvent event) {
 }
 
 void SimplePortfolio::generateOrder(SignalEvent event) {
-	auto quantity = getMaxQuantity(&event);
+	auto quantity = 1;
 	if (quantity == 0) return;
 	
 	std::string direction;
@@ -140,7 +140,7 @@ void SimplePortfolio::generateOrder(SignalEvent event) {
 }
 
 double SimplePortfolio::getMaxQuantity(SignalEvent* event) {
-	auto cash = currentHoldings.at("cash");
+	auto cash = currentHoldings.at("cash") * 0.9;
 	auto price = std::get<3>(dataHandler->consumedData.at(event->symbol).rbegin()->second);
 	return cash / price;
 }

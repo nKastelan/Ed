@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     double initialCapital = 1000;
     std::vector<std::string> symbols;
     symbols.push_back("ETH/USDT");
-    auto backtest = Backtest(symbols, "data/Binance_ETHUSDT_minute.csv", &initialCapital);
+    auto backtest = Backtest(symbols, "data/Binance_ETHUSDT_hour.csv", &initialCapital);
     auto strategy = TradingStrategy(&backtest.dataHandler);
     auto benchmark = Benchmark(&backtest.dataHandler);
     
