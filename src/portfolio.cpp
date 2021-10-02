@@ -126,13 +126,8 @@ void SimplePortfolio::onFill(FillEvent event) {
 }
 
 void SimplePortfolio::generateOrder(SignalEvent event) {
-	double quantity = 0;
-	if (event.target == "BENCH") {
-		quantity = getMaxQuantity(&event);
-	}
-	else {
-		quantity = getMaxQuantity(&event);
-	}
+	auto quantity = getMaxQuantity(&event);
+	if (quantity == 0) return;
 	
 	std::string direction;
 	if (event.signal > 0) {

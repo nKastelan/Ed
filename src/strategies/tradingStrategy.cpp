@@ -13,7 +13,7 @@ TradingStrategy::TradingStrategy(SingleCSVDataHandler* dataHandler) {
 }
 
 void TradingStrategy::calculateSignals() {
-	int n = 12;
+	int n = 18;
 	for (auto symbol : dataHandler->symbols) {
 		int direction = 0;
 
@@ -41,9 +41,10 @@ void TradingStrategy::calculateSignals() {
 			}
 		}
 		
-		if (direction != 0) {
+		if (direction != 0 && ((direction == 1 && !bought[symbol]) || (direction == -1 && bought[symbol]))) {
 			auto timestamp = dataHandler->consumedData.at(symbol).begin()->first;
 			eventQueue->push(std::make_shared<SignalEvent>(symbol, timestamp, direction * 1.0, "ALGO"));
+			bought[symbol] = !bought[symbol];
 		}
 	}
 }
