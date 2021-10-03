@@ -9,8 +9,8 @@
 
 class Portfolio {
 public:
-	virtual void onSignal(SignalEvent event) = 0;
-	virtual void onFill(FillEvent event) = 0;
+	virtual void onSignal(std::shared_ptr<SignalEvent> event) = 0;
+	virtual void onFill(std::shared_ptr<FillEvent> event) = 0;
 };
 
 class SimplePortfolio: Portfolio {
@@ -34,7 +34,7 @@ public:
 	// Performance metrics
 	std::map<std::string, double> performanceMetrics;
 
-	SimplePortfolio(SingleCSVDataHandler* dataHandler, std::vector<std::string> symbols, double* initialCapital);
+	SimplePortfolio(SingleCSVDataHandler* dataHandler, std::vector<std::string>* symbols, double* initialCapital);
 
 	SimplePortfolio() = default;
 
@@ -52,20 +52,20 @@ public:
 	void update();
 
 	// Updates positions based on FillEvents
-	void updatePositionsOnFill(FillEvent event);
+	void updatePositionsOnFill(std::shared_ptr<FillEvent> event);
 	// Updates holdings based on FillEvents
-	void updateHoldingsOnFill(FillEvent event);
+	void updateHoldingsOnFill(std::shared_ptr<FillEvent> event);
 
 	// Generates orders based on SignalEvents
-	void onSignal(SignalEvent event);
+	void onSignal(std::shared_ptr<SignalEvent> event);
 	// Updates portfolio based on FillEvents
-	void onFill(FillEvent event);
+	void onFill(std::shared_ptr<FillEvent> event);
 
 	// Sends orders
-	void generateOrder(SignalEvent event);
+	void generateOrder(std::shared_ptr<SignalEvent> event);
 
 	// Calculates the max amount we are able to order with the available cash
-	double getMaxQuantity(SignalEvent* event);
+	double getMaxQuantity(std::shared_ptr<SignalEvent> event);
 
 	// Calculates and returns the performance metrics
 	void getMetrics();

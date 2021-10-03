@@ -19,8 +19,8 @@ public:
 	SimplePortfolio benchmarkPortfolio;
 	Benchmark benchmark;
 
-	Backtest(std::vector<std::string> symbols, std::string csvDirectory, double* initialCapital);
+	Backtest(std::vector<std::string>* symbols, std::string* csvDirectory, double* initialCapital);
 
 	// Runs the backtest!
-	void run(TradingStrategy strategy, Benchmark benchmark);
+	void run(TradingStrategy* strategy, Benchmark* benchmark);
 };

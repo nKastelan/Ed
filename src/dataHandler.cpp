@@ -1,9 +1,9 @@
 #include "dataHandler.hpp"
 
-SingleCSVDataHandler::SingleCSVDataHandler(std::queue<std::shared_ptr<Event>>* eventQueue, std::string csvDirectory, std::vector<std::string> symbols, bool* continueBacktest) {
+SingleCSVDataHandler::SingleCSVDataHandler(std::queue<std::shared_ptr<Event>>* eventQueue, std::string* csvDirectory, std::vector<std::string>* symbols, bool* continueBacktest) {
     this->eventQueue = eventQueue;
-    this->csvDirectory = csvDirectory;
-    this->symbols = symbols;
+    this->csvDirectory = *csvDirectory;
+    this->symbols = *symbols;
     this->continueBacktest = continueBacktest;
     this->data;
     this->consumedData;

@@ -1,8 +1,8 @@
 #include "backtest.hpp"
 
-Backtest::Backtest(std::vector<std::string> symbols, std::string csvDirectory, double* initialCapital) : exchange(&eventQueue, &dataHandler) {
-	this->symbols = symbols;
-	this->csvDirectory = csvDirectory;
+Backtest::Backtest(std::vector<std::string>* symbols, std::string* csvDirectory, double* initialCapital) : exchange(&eventQueue, &dataHandler) {
+	this->symbols = *symbols;
+	this->csvDirectory = *csvDirectory;
 	this->initialCapital = initialCapital;
 	this->continueBacktest = false; 
 	this->dataHandler = SingleCSVDataHandler(&eventQueue, csvDirectory, symbols, &continueBacktest);
@@ -10,7 +10,7 @@ Backtest::Backtest(std::vector<std::string> symbols, std::string csvDirectory, d
 	this->benchmarkPortfolio = SimplePortfolio(&dataHandler, symbols, initialCapital);
 }
 
-void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
+void Backtest::run(TradingStrategy* strategy, Benchmark* benchmark) {
 	continueBacktest = true;
 	dataHandler.loadData();
 	dataHandler.updateBars();
@@ -26,8 +26,8 @@ void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
 			switch (event->type) {
 
 			case 0: {
-				strategy.calculateSignals();
-				benchmark.calculateSignals();
+				strategy->calculateSignals();
+				benchmark->calculateSignals();
 				portfolio.update();
 				benchmarkPortfolio.update();
 				break;
@@ -36,29 +36,29 @@ void Backtest::run(TradingStrategy strategy, Benchmark benchmark) {
 			case 1: {
 				auto signal = dynamic_pointer_cast<SignalEvent>(event);
 				if (event->target == "ALGO") {
-					portfolio.onSignal(*signal);
+					portfolio.onSignal(signal);
 				}
 				else if (event->target == "BENCH") {
-					benchmarkPortfolio.onSignal(*signal);
+					benchmarkPortfolio.onSignal(signal);
 				}
 				break;
 				}
 
 			case 2: {
 				auto order = dynamic_pointer_cast<OrderEvent>(event);
-				exchange.executeOrder(*order);
-				order->logOrder();
+				exchange.executeOrder(order);
+				//order->logOrder();
 				break;
 				}
 
 			case 3: {
 				auto fill = dynamic_pointer_cast<FillEvent>(event);
 				if (event->target == "ALGO") {
-					portfolio.onFill(*fill);
+					portfolio.onFill(fill);
 					portfolio.update();
 				}
 				else if (event->target == "BENCH") {
-					benchmarkPortfolio.onFill(*fill);
+					benchmarkPortfolio.onFill(fill);
 					benchmarkPortfolio.update();
 				}
 				break;

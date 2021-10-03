@@ -7,7 +7,7 @@ class ExecutionHandler {
 public:
 	std::queue<std::shared_ptr<Event>>* eventQueue;
 	SingleCSVDataHandler* dataHandler;
-	virtual void executeOrder(OrderEvent order) = 0;
+	virtual void executeOrder(std::shared_ptr<OrderEvent> order) = 0;
 };
 
 class InstantExecutionHandler: ExecutionHandler {
@@ -17,5 +17,5 @@ public:
 	InstantExecutionHandler() = default;
 
 	// Simulates the exchange filling the order
-	void executeOrder(OrderEvent order);
+	void executeOrder(std::shared_ptr<OrderEvent> order);
 };

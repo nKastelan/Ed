@@ -35,7 +35,7 @@ public:
     // Iterator over the historical data contained in "data"
     std::map<long long, std::tuple<double, double, double, double, double>>::iterator bar;
 
-    SingleCSVDataHandler(std::queue<std::shared_ptr<Event>>* eventQueue, std::string csvDirectory, std::vector<std::string> symbol, bool* continueBacktest);
+    SingleCSVDataHandler(std::queue<std::shared_ptr<Event>>* eventQueue, std::string* csvDirectory, std::vector<std::string>* symbol, bool* continueBacktest);
 
     SingleCSVDataHandler() = default;
 

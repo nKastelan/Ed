@@ -1,9 +1,9 @@
 #include "portfolio.hpp"
 
-SimplePortfolio::SimplePortfolio(SingleCSVDataHandler* dataHandler, std::vector<std::string> symbols, double* initialCapital) {
+SimplePortfolio::SimplePortfolio(SingleCSVDataHandler* dataHandler, std::vector<std::string>* symbols, double* initialCapital) {
 	this->dataHandler = dataHandler;
 	this->eventQueue = dataHandler->eventQueue;
-	this->symbols = symbols;
+	this->symbols = *symbols;
 	this->initialCapital = initialCapital;
 	this->allPositions = constructAllPositions();
 	this->currentPositions = constructCurrentPositions();
@@ -86,60 +86,60 @@ void SimplePortfolio::update() {
 	}
 }
 
-void SimplePortfolio::updatePositionsOnFill(FillEvent fill) {
+void SimplePortfolio::updatePositionsOnFill(std::shared_ptr<FillEvent> fill) {
 	int direction = 0;
-	if (fill.direction == "LONG") {
+	if (fill->direction == "LONG") {
 		direction = 1;
-	} else if (fill.direction == "SHORT") {
+	} else if (fill->direction == "SHORT") {
 		direction = -1;
 	}
 
-	currentPositions[fill.symbol] += direction * fill.quantity;
+	currentPositions[fill->symbol] += direction * fill->quantity;
 }
 
-void SimplePortfolio::updateHoldingsOnFill(FillEvent fill) {
+void SimplePortfolio::updateHoldingsOnFill(std::shared_ptr<FillEvent> fill) {
 	int direction = 0;
-	if (fill.direction == "LONG") {
+	if (fill->direction == "LONG") {
 		direction = 1;
 	}
-	else if (fill.direction == "SHORT") {
+	else if (fill->direction == "SHORT") {
 		direction = -1;
 	}
 
-	auto price = std::get<3>(dataHandler->consumedData.at(fill.symbol).rbegin()->second);
-	auto cost = direction * fill.quantity * price;
+	auto price = std::get<3>(dataHandler->consumedData.at(fill->symbol).rbegin()->second);
+	auto cost = direction * fill->quantity * price;
 
-	currentHoldings[fill.symbol] += cost;
-	currentHoldings["total"] -= (fill.commission + fill.slippage);
-	currentHoldings["cash"] -= (cost + fill.commission + fill.slippage);
-	currentHoldings["commission"] += fill.commission;
-	currentHoldings["slippage"] += fill.slippage;
+	currentHoldings[fill->symbol] += cost;
+	currentHoldings["total"] -= (fill->commission + fill->slippage);
+	currentHoldings["cash"] -= (cost + fill->commission + fill->slippage);
+	currentHoldings["commission"] += fill->commission;
+	currentHoldings["slippage"] += fill->slippage;
 }
 
-void SimplePortfolio::onSignal(SignalEvent event) {
+void SimplePortfolio::onSignal(std::shared_ptr<SignalEvent> event) {
 	generateOrder(event);
 }
 
-void SimplePortfolio::onFill(FillEvent event) {
+void SimplePortfolio::onFill(std::shared_ptr<FillEvent> event) {
 	updateHoldingsOnFill(event);
 	updatePositionsOnFill(event);
 }
 
-void SimplePortfolio::generateOrder(SignalEvent event) {
-	auto quantity = 1;
+void SimplePortfolio::generateOrder(std::shared_ptr<SignalEvent> event) {
+	auto quantity = 1.0;
 	if (quantity == 0) return;
 	
 	std::string direction;
-	if (event.signal > 0) {
+	if (event->signal > 0) {
 		direction = "LONG";
-	} else if (event.signal < 0) {
+	} else if (event->signal < 0) {
 		direction = "SHORT";
 	}
 
-	eventQueue->push(std::make_shared<OrderEvent>(event.symbol, "MARKET", quantity, direction, event.target));
+	eventQueue->push(std::make_shared<OrderEvent>(&event->symbol, "MARKET", &quantity, &direction, event->target));
 }
 
-double SimplePortfolio::getMaxQuantity(SignalEvent* event) {
+double SimplePortfolio::getMaxQuantity(std::shared_ptr<SignalEvent> event) {
 	auto cash = currentHoldings.at("cash") * 0.9;
 	auto price = std::get<3>(dataHandler->consumedData.at(event->symbol).rbegin()->second);
 	return cash / price;
