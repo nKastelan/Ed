@@ -46,7 +46,6 @@ void TradingStrategy::calculateSignals() {
 		if (direction != 0 && ((direction == 1 && !bought[symbol]) || (direction == -1 && bought[symbol]))) {
 			auto timestamp = dataHandler->consumedData.at(symbol).begin()->first;
 			eventQueue->push(std::make_shared<SignalEvent>(&symbol, &timestamp, 1.0 * direction, "ALGO"));
-			//std::cout << direction << std::endl;
 			bought[symbol] = !bought[symbol];
 		}
 	}

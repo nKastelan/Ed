@@ -14,18 +14,18 @@ SimplePortfolio::SimplePortfolio(SingleCSVDataHandler* dataHandler, std::vector<
 std::map<long long, std::unordered_map<std::string, double>> SimplePortfolio::constructAllPositions() {
 	std::unordered_map<std::string, double> innerMap;
 	for (auto symbol : symbols) {
-		innerMap.insert(std::make_pair(symbol, 0.0));
+		innerMap.insert({ symbol, 0.0 });
 	}
 	auto firstTimestamp = dataHandler->bar->first;
 	std::map<long long, std::unordered_map<std::string, double>> map;
-	map.insert(std::make_pair(firstTimestamp, innerMap));
+	map.insert({ firstTimestamp, innerMap });
 	return map;
 }
 
 std::unordered_map<std::string, double> SimplePortfolio::constructCurrentPositions() {
 	std::unordered_map<std::string, double> map;
 	for (auto symbol : symbols) {
-		map.insert(std::make_pair(symbol, 0.0));
+		map.insert({ symbol, 0.0 });
 	}
 	return map;
 }
@@ -33,29 +33,29 @@ std::unordered_map<std::string, double> SimplePortfolio::constructCurrentPositio
 std::map<long long, std::unordered_map<std::string, double>> SimplePortfolio::constructAllHoldings() {
 	std::unordered_map<std::string, double> innerMap;
 	for (auto symbol : symbols) {
-		innerMap.insert(std::make_pair(symbol, 0.0));
+		innerMap.insert({ symbol, 0.0 });
 	}
-	innerMap.insert(std::make_pair("cash", *initialCapital));
-	innerMap.insert(std::make_pair("commission", 0.0));
-	innerMap.insert(std::make_pair("slippage", 0.0));
-	innerMap.insert(std::make_pair("total", *initialCapital));
-	innerMap.insert(std::make_pair("returns", 0.0));
-	innerMap.insert(std::make_pair("equityCurve", 0.0));
+	innerMap.insert({ "cash", *initialCapital });
+	innerMap.insert({ "commission", 0.0 });
+	innerMap.insert({ "slippage", 0.0 });
+	innerMap.insert({ "total", *initialCapital });
+	innerMap.insert({ "returns", 0.0 });
+	innerMap.insert({ "equityCurve", 0.0 });
 	auto firstTimestamp = dataHandler->bar->first;
 	std::map<long long, std::unordered_map<std::string, double>> map;
-	map.insert(std::make_pair(firstTimestamp, innerMap));
+	map.insert({ firstTimestamp, innerMap });
 	return map;
 }
 
 std::unordered_map<std::string, double> SimplePortfolio::constructCurrentHoldings() {
 	std::unordered_map<std::string, double> map;
 	for (auto symbol : symbols) {
-		map.insert(std::make_pair(symbol, 0.0));
+		map.insert({ symbol, 0.0 });
 	}
-	map.insert(std::make_pair("cash", *initialCapital));
-	map.insert(std::make_pair("commission", 0.0));
-	map.insert(std::make_pair("slippage", 0.0));
-	map.insert(std::make_pair("total", *initialCapital));
+	map.insert({ "cash", *initialCapital });
+	map.insert({ "commission", 0.0 });
+	map.insert({ "slippage", 0.0 });
+	map.insert({ "total", *initialCapital });
 	return map;
 }
 
@@ -63,11 +63,11 @@ void SimplePortfolio::update() {
 	auto notCash = 0.0;
 	auto prevTotal = allHoldings.rbegin()->second["total"];
 	auto prevEquityCurve = allHoldings.rbegin()->second["equityCurve"];
-	auto timeStamp = dataHandler->consumedData.at(symbols[0]).rbegin()->first;
+	auto timeStamp = dataHandler->consumedData[symbols[0]].rbegin()->first;
 	for (auto symbol : symbols) {
 		allPositions[timeStamp][symbol] = currentPositions[symbol];
-		auto price = std::get<3>(dataHandler->consumedData.at(symbol).rbegin()->second);
-		auto currentValue = currentPositions.at(symbol) * price;
+		auto price = std::get<3>(dataHandler->consumedData[symbol].rbegin()->second);
+		auto currentValue = currentPositions[symbol] * price;
 		allHoldings[timeStamp][symbol] = currentValue;
 		currentHoldings[symbol] = currentValue;
 		notCash += currentValue;
@@ -79,7 +79,7 @@ void SimplePortfolio::update() {
 	allHoldings[timeStamp]["commission"] = currentHoldings["commission"];
 	allHoldings[timeStamp]["slippage"] = currentHoldings["slippage"];
 
-	if (allHoldings.size()) {
+	if (allHoldings.size() > 1) {
 		auto returns = (allHoldings[timeStamp]["total"] / prevTotal) - 1;
 		allHoldings[timeStamp]["returns"] = returns;
 		allHoldings[timeStamp]["equityCurve"] = (prevEquityCurve + 1) * (returns + 1) - 1;
@@ -146,7 +146,7 @@ double SimplePortfolio::getMaxQuantity(std::shared_ptr<SignalEvent> event) {
 }
 
 void SimplePortfolio::getMetrics() {
-	auto rit = dataHandler->consumedData.at(symbols[0]).rbegin();
+	auto rit = dataHandler->consumedData[symbols[0]].rbegin();
 	// unix difference between two data points, needed for proper annualization
 	auto diff = rit->first - (++rit)->first;
 	// 86'400'000 for daily data
@@ -172,7 +172,7 @@ void SimplePortfolio::getMetrics() {
 	
 	double mean = std::accumulate(allHoldings.begin(), allHoldings.end(), 0.0, 
 		[](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p) 
-		{return value + p.second.at("returns");});
+		{return value + p.second.at("returns"); });
 	mean /= allHoldings.size();
 	performanceMetrics["Return (Avg. Daily) [%]"] = mean * (period / 365) * 100;
 
@@ -223,7 +223,7 @@ void SimplePortfolio::getMetrics() {
 	performanceMetrics["CAGR [%]"] = (pow(equityFinal / *initialCapital, 1 / years) - 1) * 100;
 
 	double returns = equityFinal / *initialCapital * 100;
-	performanceMetrics["Return [%]"] = returns;
+	performanceMetrics["Total Return [%]"] = returns;
 
 	double exposure = std::accumulate(allPositions.begin(), allPositions.end(), 0.0,
 		[this](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p)

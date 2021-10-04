@@ -12,6 +12,7 @@ Backtest::Backtest(std::vector<std::string>* symbols, std::string* csvDirectory,
 
 void Backtest::run(TradingStrategy* strategy, Benchmark* benchmark) {
 	continueBacktest = true;
+	bool first = true;
 	dataHandler.loadData();
 	dataHandler.updateBars();
 
@@ -27,7 +28,10 @@ void Backtest::run(TradingStrategy* strategy, Benchmark* benchmark) {
 
 			case 0: {
 				strategy->calculateSignals();
-				benchmark->calculateSignals();
+				if (first) {
+					benchmark->calculateSignals();
+					first = false;
+				}
 				portfolio.update();
 				benchmarkPortfolio.update();
 				break;
@@ -47,7 +51,7 @@ void Backtest::run(TradingStrategy* strategy, Benchmark* benchmark) {
 			case 2: {
 				auto order = dynamic_pointer_cast<OrderEvent>(event);
 				exchange.executeOrder(order);
-				//order->logOrder();
+				order->logOrder();
 				break;
 				}
 
@@ -71,8 +75,8 @@ void Backtest::run(TradingStrategy* strategy, Benchmark* benchmark) {
 
 	std::cout << "Backtest ended!\n" << std::endl;
 
-	std::cout << "PERFORMANCE METRICS (TRADING STRATEGY)" << std::endl;
+	std::cout << "PERFORMANCE METRICS (TRADING STRATEGY)\n--------------------------------------" << std::endl;
 	portfolio.getMetrics();
-	std::cout << "\nPERFORMANCE METRICS (BENCHMARK)" << std::endl;
+	std::cout << "\n\nPERFORMANCE METRICS (BUY AND HOLD)\n----------------------------------" << std::endl;
 	benchmarkPortfolio.getMetrics();
 }
