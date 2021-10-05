@@ -127,6 +127,14 @@ void SimplePortfolio::onFill(std::shared_ptr<FillEvent> event) {
 
 void SimplePortfolio::generateOrder(std::shared_ptr<SignalEvent> event) {
 	auto quantity = 1.0;
+	/*
+	if (event->target == "ALGO") {
+		quantity = 1;
+	}
+	else {
+		quantity = getMaxQuantity(event);
+	}
+	*/
 	if (quantity == 0) return;
 	
 	std::string direction;
@@ -140,7 +148,7 @@ void SimplePortfolio::generateOrder(std::shared_ptr<SignalEvent> event) {
 }
 
 double SimplePortfolio::getMaxQuantity(std::shared_ptr<SignalEvent> event) {
-	auto cash = currentHoldings.at("cash") * 0.9;
+	auto cash = currentHoldings.at("cash");
 	auto price = std::get<3>(dataHandler->consumedData.at(event->symbol).rbegin()->second);
 	return cash / price;
 }
@@ -174,7 +182,8 @@ void SimplePortfolio::getMetrics() {
 		[](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p) 
 		{return value + p.second.at("returns"); });
 	mean /= allHoldings.size();
-	performanceMetrics["Return (Avg. Daily) [%]"] = mean * (period / 365) * 100;
+	performanceMetrics["Return (Avg. per Bar) [%]"] = mean * 100;
+	performanceMetrics["Return (Avg. Daily) [%]"] = (pow(mean + 1, period / 365) - 1) * 100;
 
 	double std = std::accumulate(allHoldings.begin(), allHoldings.end(), 0.0,
 		[](double value, const std::map<long long, std::unordered_map<std::string, double>>::value_type& p)
