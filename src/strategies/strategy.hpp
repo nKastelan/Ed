@@ -2,6 +2,7 @@
 #include "../event.hpp"
 #include "../dataHandler.hpp"
 #include "ta_libc.h"
+#include <memory>
 #include <vector>
 
 class Strategy {

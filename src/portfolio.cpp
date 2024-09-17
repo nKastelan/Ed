@@ -163,15 +163,15 @@ void SimplePortfolio::getMetrics() {
 
 	int period = 0;
 	switch (diff) {
-	case 86'400'000:
+	case 86400000:
 		period = 365;
 		break; 
 
-	case 3'600'000: 
+	case 3600000: 
 		period = 365*24;
 		break;
 		
-	case 60'000: 
+	case 60000: 
 		period = 365*24*60;
 		break;
 		

@@ -30,11 +30,11 @@ void TradingStrategy::calculateSignals() {
 		int outBeg;
 		int outNbElement;
 		
-		auto retCode = TA_RSI(n, n, closes.data(), n, &outBeg, &outNbElement, &rsi);
+		/*auto retCode = TA_RSI(n, n, closes.data(), n, &outBeg, &outNbElement, &rsi);
 
 		if (retCode != TA_SUCCESS) {
 			return;
-		}
+		} */
 		
 		if (rsi > 70) {
 			direction = -1;

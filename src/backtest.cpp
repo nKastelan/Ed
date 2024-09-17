@@ -38,7 +38,7 @@ void Backtest::run(TradingStrategy* strategy, Benchmark* benchmark) {
 				}
 
 			case 1: {
-				auto signal = dynamic_pointer_cast<SignalEvent>(event);
+				auto signal = std::dynamic_pointer_cast<SignalEvent>(event);
 				if (event->target == "ALGO") {
 					portfolio.onSignal(signal);
 				}
@@ -49,14 +49,14 @@ void Backtest::run(TradingStrategy* strategy, Benchmark* benchmark) {
 				}
 
 			case 2: {
-				auto order = dynamic_pointer_cast<OrderEvent>(event);
+				auto order = std::dynamic_pointer_cast<OrderEvent>(event);
 				exchange.executeOrder(order);
 				order->logOrder();
 				break;
 				}
 
 			case 3: {
-				auto fill = dynamic_pointer_cast<FillEvent>(event);
+				auto fill = std::dynamic_pointer_cast<FillEvent>(event);
 				if (event->target == "ALGO") {
 					portfolio.onFill(fill);
 					portfolio.update();

@@ -5,6 +5,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <memory>
 #include "event.hpp"
 
 class DataHandler {
